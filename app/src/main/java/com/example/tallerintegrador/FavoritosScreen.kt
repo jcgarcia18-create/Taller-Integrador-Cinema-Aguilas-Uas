@@ -1,25 +1,15 @@
 package com.example.tallerintegrador
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-
-
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults // Necesario para .cardColors y .cardElevation
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import coil.compose.AsyncImage // El import para la nueva forma de cargar imágenes
-
-
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,98 +17,124 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.tallerintegrador.data.model.pelicula
-import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
+import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.ui.theme.DarkBlue
 import com.example.tallerintegrador.ui.theme.Yellow
+import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
+
+// ✅ CAMBIOS CLAVE EN FavoritosScreen.kt
 
 
 @Composable
-fun FavoritosScreen(viewModel: PeliculaViewModel) {
-    // TODO: En una implementación real, deberías tener una lista de favoritos guardada
-    // Por ahora, mostramos las primeras 3 películas como ejemplo
-    val peliculas by viewModel.peliculas.collectAsState()
-    val peliculasFavoritas = remember { mutableStateListOf<pelicula>() }
+fun FavoritosScreen(
+    peliculaViewModel: PeliculaViewModel?,
+    navController: NavController?,
+    favoritosViewModel: FavoritosViewModel
+) {
+    val favoritos by favoritosViewModel.favoritos.collectAsState()
+    val isLoading by favoritosViewModel.isLoading.collectAsState()
+    val error by favoritosViewModel.error.collectAsState()
 
-    LaunchedEffect(peliculas) {
-        if (peliculasFavoritas.isEmpty() && peliculas.isNotEmpty()) {
-            peliculasFavoritas.addAll(peliculas.take(3))
+    // ✅ CAMBIO: Solo carga si la lista está vacía
+    LaunchedEffect(Unit) {
+        if (favoritos.isEmpty()) {
+            favoritosViewModel.cargarFavoritos()
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBlue)
-            .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Mis Favoritos",
-                color = Yellow,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = "Favoritos",
-                tint = Yellow,
-                modifier = Modifier.size(32.dp)
-            )
-        }
-
-        if (peliculasFavoritas.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Sin favoritos",
-                        tint = Yellow.copy(alpha = 0.5f),
-                        modifier = Modifier.size(80.dp)
-                    )
+        when {
+            isLoading && favoritos.isEmpty() -> {
+                // ✅ NUEVO: Indicador de carga
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = Yellow)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No tienes películas favoritas",
-                        color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "¡Agrega tus películas favoritas!",
-                        color = Color.White.copy(alpha = 0.4f),
-                        fontSize = 14.sp
+                        text = "Cargando favoritos...",
+                        color = Color.White,
+                        fontSize = 16.sp
                     )
                 }
             }
-        } else {
-            Text(
-                text = "${peliculasFavoritas.size} película(s) favorita(s)",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(peliculasFavoritas) { pelicula ->
-                    FavoritoItem(
-                        pelicula = pelicula,
-                        onRemove = { peliculasFavoritas.remove(pelicula) }
+            error != null -> {
+                // ✅ NUEVO: Manejo de errores
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ErrorOutline,
+                        contentDescription = "Error",
+                        tint = Color.Red,
+                        modifier = Modifier.size(64.dp)
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Error al cargar favoritos",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = error ?: "Error desconocido",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = { favoritosViewModel.cargarFavoritos() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                    ) {
+                        Text("Reintentar", color = DarkBlue)
+                    }
+                }
+            }
+
+            favoritos.isEmpty() -> {
+                Text(
+                    text = "Todavía no tienes películas favoritas",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 16.sp,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(favoritos) { peli ->
+                        FavoritoItem(
+                            pelicula = peli,
+                            onClick = {
+                                navController?.navigate("detalle_pelicula/${peli.id}")
+                            },
+                            onRemove = {
+                                favoritosViewModel.toggleFavorito(peli.id, true)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -126,39 +142,34 @@ fun FavoritosScreen(viewModel: PeliculaViewModel) {
 }
 
 @Composable
-fun FavoritoItem(pelicula: pelicula, onRemove: () -> Unit) {
-    // --- CÓDIGO NUEVO Y CORRECTO ---
+private fun FavoritoItem(
+    pelicula: pelicula,
+    onClick: () -> Unit,
+    onRemove: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* TODO: Ver detalles de la película */ },
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        // Inicio de la corrección de errores
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-        // Fin de la corrección de errores
+        colors = CardDefaults.cardColors(containerColor = DarkBlue.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Corrección de la carga de imagen (práctica recomendada)
             AsyncImage(
                 model = pelicula.posterUrl,
                 contentDescription = pelicula.title,
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(120.dp)
+                    .size(90.dp)
+                    .aspectRatio(2f / 3f)
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
 
-            // El resto del contenido de la fila no necesita cambios
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -166,31 +177,22 @@ fun FavoritoItem(pelicula: pelicula, onRemove: () -> Unit) {
                 Text(
                     text = pelicula.title,
                     color = Yellow,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = pelicula.genre,
                     color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${pelicula.durationMinutes} min",
                     color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 12.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = pelicula.description,
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 13.sp,
-                    maxLines = 2
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
-
-            Spacer(modifier = Modifier.width(8.dp))
 
             IconButton(
                 onClick = onRemove,

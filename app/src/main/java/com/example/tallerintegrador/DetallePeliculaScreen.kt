@@ -1,256 +1,397 @@
 package com.example.tallerintegrador
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebView
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.net.toUri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
+import com.example.tallerintegrador.feature.peliculas.PeliculaDetailState
 import com.example.tallerintegrador.ui.theme.DarkBlue
 import com.example.tallerintegrador.ui.theme.Yellow
-@OptIn(ExperimentalMaterial3Api::class) // <-- AÑADE ESTA LÍNEA
+import androidx.compose.ui.layout.ContentScale
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+
+/**
+ * ✅ ACTUALIZADO: Ahora recibe FavoritosViewModel como parámetro
+ * Ya no crea una nueva instancia internamente
+ */
+// ✅ CAMBIOS CLAVE EN DetallePeliculaScreen.kt
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetallePeliculaScreen(
-    peliculaTitulo: String,
+    peliculaId: Int,
     viewModel: PeliculaViewModel,
-    navController: NavController
+    navController: NavController,
+    favoritosViewModel: FavoritosViewModel
 ) {
-    val peliculas by viewModel.peliculas.collectAsState()
-    var isFavorite by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val peliculaDetailState by viewModel.peliculaDetail.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if (peliculas.isEmpty()) {
-            viewModel.getPeliculas()
-        }
+    // ✅ CAMBIO: Usa Flow reactivo en lugar de suspend function
+    val isFavorite by favoritosViewModel.esFavoritoFlow(peliculaId)
+        .collectAsState(initial = false)
+
+    // Carga automática de la película
+    LaunchedEffect(peliculaId) {
+        viewModel.getPeliculaByIdWithFallback(peliculaId)
     }
 
-    val pelicula = peliculas.find { it.title == peliculaTitulo }
-
-    if (pelicula == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBlue),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Yellow)
+    // Limpieza cuando se sale
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clearPeliculaDetail()
         }
-        return
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
-                // La nueva API para colores y elevación
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent, // Color de fondo
-                    navigationIconContentColor = Color.White, // Color del icono de navegación
-                    actionIconContentColor = Color.White // Color de los iconos de acción
+                    containerColor = Color.Transparent,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            // tint ya no es necesario aquí, se controla con 'navigationIconContentColor'
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { isFavorite = !isFavorite }) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Favorito",
-                            tint = if (isFavorite) Color.Red else Color.White // Tint aquí aún es útil para el cambio de color dinámico
-                        )
-                    }
-                    IconButton(onClick = { /* Compartir */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Share,
-                            contentDescription = "Compartir"
-                            // tint ya no es necesario
+                            contentDescription = "Volver"
                         )
                     }
                 }
             )
         },
-        containerColor = DarkBlue // <-- El parámetro correcto para el fondo
+        containerColor = DarkBlue
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(padding)
-        ) {
-            // Póster con gradiente
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-            ) {
-                AsyncImage(
-                    model = pelicula.posterUrl,
-                    contentDescription = pelicula.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+        when (val state = peliculaDetailState) {
+            is PeliculaDetailState.Idle -> {
+                // Estado inicial
+            }
 
-
+            is PeliculaDetailState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    DarkBlue.copy(alpha = 0.7f),
-                                    DarkBlue
-                                ),
-                                startY = 200f
-                            )
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(color = Yellow)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Cargando detalles...",
+                            color = Color.White,
+                            fontSize = 16.sp
                         )
-                )
+                    }
+                }
             }
 
-            // Información de la película
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    text = pelicula.title,
-                    color = Yellow,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    InfoChip(text = pelicula.genre)
-                    InfoChip(text = "${pelicula.durationMinutes} min")
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Sinopsis",
-                    color = Yellow,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = pelicula.description,
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Reproductor de YouTube
-                Text(
-                    text = "Tráiler",
-                    color = Yellow,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                val context = LocalContext.current
-
-                Button(
-                    onClick = {
-                        val url = pelicula.videoUrl
-                        val customTabsIntent = CustomTabsIntent.Builder().build()
-                        customTabsIntent.launchUrl(context, url.toUri())
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+            is PeliculaDetailState.Error -> {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Ver tráiler",
-                        tint = DarkBlue
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Ver tráiler",
-                        color = DarkBlue,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ErrorOutline,
+                            contentDescription = "Error",
+                            tint = Color.Red,
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Error al cargar la película",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = state.message,
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = { viewModel.getPeliculaById(peliculaId, forceRefresh = true) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                        ) {
+                            Text("Reintentar", color = DarkBlue)
+                        }
+                    }
                 }
+            }
 
+            is PeliculaDetailState.Success -> {
+                val pelicula = state.pelicula
 
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Botón de reproducir
-                // --- CÓDIGO NUEVO Y CORRECTO ---
-                Button(
-                    onClick = { /* Reproducir película */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow), // <--- El parámetro correcto es 'containerColor'
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(padding)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Reproducir",
-                        tint = DarkBlue,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "Reproducir película",
-                        color = DarkBlue,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    // Póster con gradiente
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                    ) {
+                        var isLoading by remember { mutableStateOf(true) }
+                        var hasError by remember { mutableStateOf(false) }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                        AsyncImage(
+                            model = pelicula.posterUrl,
+                            contentDescription = pelicula.title,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Gray.copy(alpha = 0.3f)),
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center,
+                            onLoading = { isLoading = true },
+                            onSuccess = {
+                                isLoading = false
+                                hasError = false
+                            },
+                            onError = {
+                                isLoading = false
+                                hasError = true
+                            }
+                        )
+
+                        if (isLoading && !hasError) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = Yellow,
+                                    modifier = Modifier.size(50.dp)
+                                )
+                            }
+                        }
+
+                        if (hasError) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Gray.copy(alpha = 0.5f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ErrorOutline,
+                                    contentDescription = "Error",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                            }
+                        }
+
+                        // Gradiente
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            DarkBlue.copy(alpha = 0.7f),
+                                            DarkBlue
+                                        ),
+                                        startY = 200f
+                                    )
+                                )
+                        )
+
+                        // Botones de acción
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // ✅ CAMBIO: El botón se actualiza automáticamente con el Flow
+                            IconButton(
+                                onClick = {
+                                    favoritosViewModel.toggleFavorito(pelicula.id, isFavorite)
+                                },
+                                modifier = Modifier
+                                    .background(
+                                        color = DarkBlue.copy(alpha = 0.7f),
+                                        shape = RoundedCornerShape(50)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                    contentDescription = "Favorito",
+                                    tint = if (isFavorite) Color.Red else Color.White
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { /* Compartir */ },
+                                modifier = Modifier
+                                    .background(
+                                        color = DarkBlue.copy(alpha = 0.7f),
+                                        shape = RoundedCornerShape(50)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Compartir",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    }
+
+                    // Información de la película
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = pelicula.title,
+                            color = Yellow,
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            InfoChip(text = pelicula.genre)
+                            InfoChip(text = "${pelicula.durationMinutes} min")
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Text(
+                            text = "Sinopsis",
+                            color = Yellow,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = pelicula.description,
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botón de tráiler
+                        if (pelicula.videoUrl.isNotBlank() &&
+                            pelicula.videoUrl != "url" &&
+                            (pelicula.videoUrl.startsWith("http://") ||
+                                    pelicula.videoUrl.startsWith("https://"))) {
+
+                            Text(
+                                text = "Tráiler",
+                                color = Yellow,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Button(
+                                onClick = {
+                                    try {
+                                        val customTabsIntent = CustomTabsIntent.Builder().build()
+                                        customTabsIntent.launchUrl(context, pelicula.videoUrl.toUri())
+                                    } catch (e: Exception) {
+                                        Log.e("DetallePelicula", "Error abriendo URL: ${e.message}")
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.PlayArrow,
+                                    contentDescription = "Ver tráiler",
+                                    tint = DarkBlue
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Ver tráiler",
+                                    color = DarkBlue,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+
+                        // Botón de reproducir
+                        Button(
+                            onClick = { /* Reproducir película */ },
+                            colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = "Reproducir",
+                                tint = DarkBlue,
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Reproducir película",
+                                color = DarkBlue,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
+                }
             }
         }
     }
@@ -269,85 +410,5 @@ fun InfoChip(text: String) {
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
-    }
-}
-
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-fun YouTubePlayer(videoUrl: String) {
-    val videoId = remember(videoUrl) { extractYouTubeVideoId(videoUrl) }
-    val context = LocalContext.current
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(220.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Black // 'backgroundColor' ahora es 'containerColor'
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp // 'elevation' ahora se configura así
-        )
-    ) {
-        // --- CÓDIGO NUEVO Y CORRECTO ---
-        if (videoId != null) {
-            // Si tenemos un ID, mostramos el reproductor
-            AndroidView(
-                factory = {
-                    WebView(context).apply {
-                        layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        settings.loadWithOverviewMode = true
-                        settings.useWideViewPort = true
-                        webChromeClient = WebChromeClient()
-
-                        val embedUrl = "https://www.youtube.com/embed/$videoId"
-                        loadUrl(embedUrl)
-                    }
-                },
-                update = { webView ->
-                    val embedUrl = "https://www.youtube.com/embed/$videoId"
-                    webView.loadUrl(embedUrl)
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            // Si NO tenemos un ID, mostramos el mensaje de error
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Tráiler no disponible",
-                    color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 16.sp
-                )
-            }
-        }
-}
-    }
-fun extractYouTubeVideoId(url: String): String? {
-    return try {
-        when {
-            url.contains("youtube.com/watch?v=") -> {
-                url.substringAfter("watch?v=").substringBefore("&")
-            }
-            url.contains("youtu.be/") -> {
-                url.substringAfter("youtu.be/").substringBefore("?")
-            }
-            url.contains("youtube.com/embed/") -> {
-                url.substringAfter("embed/").substringBefore("?")
-            }
-            else -> null
-        }
-    } catch (e: Exception) {
-        null
     }
 }

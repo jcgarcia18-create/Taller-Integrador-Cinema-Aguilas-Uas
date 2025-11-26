@@ -4,76 +4,92 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.data.repository.PeliculaRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PeliculaViewModel(private val repository: PeliculaRepository) : ViewModel() {
+sealed class PeliculaDetailState {
+    object Idle : PeliculaDetailState()
+    object Loading : PeliculaDetailState()
+    data class Success(val pelicula: pelicula) : PeliculaDetailState()
+    data class Error(val message: String) : PeliculaDetailState()
+}
 
-    // --- ESTADO PARA LA LISTA DE PELÍCULAS (HomeScreen) ---
+@HiltViewModel
+class PeliculaViewModel @Inject constructor(
+    private val repository: PeliculaRepository
+) : ViewModel() {
+
     private val _peliculas = MutableStateFlow<List<pelicula>>(emptyList())
-    val peliculas: StateFlow<List<pelicula>> = _peliculas.asStateFlow() // Usar asStateFlow es una mejor práctica
+    val peliculas: StateFlow<List<pelicula>> = _peliculas.asStateFlow()
 
-    // --- NUEVO: ESTADO PARA UNA SOLA PELÍCULA (DetallePeliculaScreen) ---
-    private val _peliculaSeleccionada = MutableStateFlow<pelicula?>(null)
-    val peliculaSeleccionada: StateFlow<pelicula?> = _peliculaSeleccionada.asStateFlow()
+    private val _isLoadingList = MutableStateFlow(false)
+    val isLoadingList: StateFlow<Boolean> = _isLoadingList.asStateFlow()
 
-    /**
-     * Obtiene la lista completa de películas desde el repositorio.
-     * Usado por la pantalla principal (HomeScreen).
-     */
-    fun getPeliculas() {
+    private val _peliculaDetail = MutableStateFlow<PeliculaDetailState>(PeliculaDetailState.Idle)
+    val peliculaDetail: StateFlow<PeliculaDetailState> = _peliculaDetail.asStateFlow()
+
+    fun getPeliculas(forceRefresh: Boolean = false) {
+        if (_peliculas.value.isNotEmpty() && !forceRefresh) {
+            return
+        }
+
         viewModelScope.launch {
+            _isLoadingList.value = true
+
             try {
-                val peliculasList = repository.getPeliculas()
+                val peliculasList = repository.getPeliculas(forceRefresh)
                 _peliculas.value = peliculasList
             } catch (e: Exception) {
-                // Manejar el error, por ejemplo, mostrando un mensaje en la UI
-                // _errorState.value = "No se pudieron cargar las películas"
+                _peliculas.value = emptyList()
+            } finally {
+                _isLoadingList.value = false
             }
         }
     }
 
-    /**
-     * NUEVO: Carga los detalles de una película específica por su título.
-     * Usado por la pantalla de detalles (DetallePeliculaScreen).
-     */
-    fun getPeliculaPorTitulo(titulo: String) {
+    fun getPeliculaById(peliculaId: Int, forceRefresh: Boolean = false) {
         viewModelScope.launch {
+            _peliculaDetail.value = PeliculaDetailState.Loading
+
             try {
-                // Simula la búsqueda en la lista ya cargada o podrías llamar a un nuevo método del repositorio.
-                // Para este ejemplo, buscamos en la lista que ya tenemos.
-                // En un caso real, sería mejor: repository.getPeliculaPorTitulo(titulo)
-                val peliculaEncontrada = _peliculas.value.find { it.title == titulo }
-                _peliculaSeleccionada.value = peliculaEncontrada
+                val pelicula = repository.getPeliculaById(peliculaId, forceRefresh)
+                _peliculaDetail.value = PeliculaDetailState.Success(pelicula)
             } catch (e: Exception) {
-                // Manejar el error
-                _peliculaSeleccionada.value = null
+                _peliculaDetail.value = PeliculaDetailState.Error(
+                    e.message ?: "Error al cargar los detalles de la película"
+                )
             }
         }
     }
 
-
-    /**
-     * NUEVO: Cambia el estado de favorito de una película.
-     * Esta es la función que resuelve el warning "Assigned value is never read".
-     */
-    fun toggleFavoriteStatus(pelicula: pelicula) {
+    fun getPeliculaByIdWithFallback(peliculaId: Int) {
         viewModelScope.launch {
-            // --- LÓGICA REAL DEBERÍA IR AQUÍ ---
-            // 1. Llama a tu repositorio para actualizar el estado en la base de datos o API.
-            //    Ejemplo: repository.updateFavoriteStatus(pelicula.id, !pelicula.esFavorita)
+            val peliculaLocal = _peliculas.value.find { it.id == peliculaId }
 
-            // 2. Por ahora, solo actualizaremos el estado en memoria para que la UI reaccione.
-            //    Actualizamos la película seleccionada con el nuevo estado de favorito.
-            _peliculaSeleccionada.value = _peliculaSeleccionada.value?.copy(
-                // Aquí necesitarías un campo como 'esFavorita' en tu data class
-                // esFavorita = !pelicula.esFavorita
-            )
-
-            // Solo para depuración, puedes imprimir un mensaje.
-            println("Cambiando estado de favorito para: ${pelicula.title}")
+            if (peliculaLocal != null) {
+                _peliculaDetail.value = PeliculaDetailState.Success(peliculaLocal)
+            } else {
+                getPeliculaById(peliculaId)
+            }
         }
+    }
+
+    fun clearPeliculaDetail() {
+        _peliculaDetail.value = PeliculaDetailState.Idle
+    }
+
+    fun clearCache() {
+        viewModelScope.launch {
+            repository.clearCache()
+            _peliculas.value = emptyList()
+        }
+    }
+
+    fun refresh() {
+        getPeliculas(forceRefresh = true)
     }
 }
