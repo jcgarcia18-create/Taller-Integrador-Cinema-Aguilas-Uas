@@ -1,6 +1,7 @@
 package com.example.tallerintegrador
 
 import android.content.Context
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
  * - Seguridad de cuenta
  * - Historial de actividad
  */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrivacidadScreen(
@@ -390,7 +392,7 @@ fun PrivacidadScreen(
                         date = "Ahora",
                         isCurrent = true
                     )
-                    Divider(
+                    HorizontalDivider(
                         color = Color.White.copy(alpha = 0.2f),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )

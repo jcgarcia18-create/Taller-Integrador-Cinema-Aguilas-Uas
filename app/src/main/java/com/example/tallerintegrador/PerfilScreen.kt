@@ -20,8 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tallerintegrador.auth.AuthViewModel
+import com.example.tallerintegrador.feature.admin.AdminViewModel
 import com.example.tallerintegrador.data.local.TokenManager
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.ui.theme.DarkBlue
@@ -37,8 +39,10 @@ import com.example.tallerintegrador.ui.theme.Yellow
 fun PerfilScreen(
     navController: NavController?,
     authViewModel: AuthViewModel,
-    favoritosViewModel: FavoritosViewModel
+    favoritosViewModel: FavoritosViewModel,
+    adminViewModel: AdminViewModel = hiltViewModel()
 ) {
+    val isAdmin by adminViewModel.isAdmin.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val tokenManager = remember { TokenManager(context.applicationContext) }
@@ -138,6 +142,89 @@ fun PerfilScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
+            // ===== PANEL DE ADMINISTRACIÓN ===== ✅ NUEVO
+            if (isAdmin) {
+                item {
+                    SectionHeader("Administración")
+                }
+
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Yellow.copy(alpha = 0.15f)
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        ),
+                        onClick = { navController?.navigate("admin/dashboard") }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(Yellow.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Shield,
+                                    contentDescription = "Admin",
+                                    tint = Yellow,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "Panel de Administración",
+                                        color = Yellow,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Surface(
+                                        color = Color.Red,
+                                        shape = RoundedCornerShape(4.dp)
+                                    ) {
+                                        Text(
+                                            "ADMIN",
+                                            color = Color.White,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Gestionar usuarios, películas y más",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 13.sp
+                                )
+                            }
+
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = "Ir",
+                                tint = Yellow
+                            )
+                        }
+                    }
+                }
+            }
+            // ===== FIN PANEL DE ADMINISTRACIÓN =====
             item {
                 ProfileOption(
                     icon = Icons.Filled.Person,

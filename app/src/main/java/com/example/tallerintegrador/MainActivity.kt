@@ -10,6 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.tallerintegrador.auth.AuthViewModel
+import com.example.tallerintegrador.feature.admin.AdminViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.ui.theme.TallerIntegradorTheme
@@ -146,6 +147,42 @@ fun MainNavigation() {
 
         composable("acerca_de") {
             AcercaDeScreen(navController = navController)
+        }
+        composable("admin/dashboard") {
+            val authViewModel: AuthViewModel = hiltViewModel()
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            AdminDashboardScreen(
+                navController = navController,
+                adminViewModel = adminViewModel
+            )
+        }
+
+        composable("admin/usuarios") {
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            AdminUsuariosScreen(
+                navController = navController,
+                adminViewModel = adminViewModel
+            )
+        }
+
+        composable("admin/peliculas") {
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            AdminPeliculasScreen(
+                navController = navController,
+                adminViewModel = adminViewModel
+            )
+        }
+
+        composable("admin/logs") {
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            AdminLogsScreen(
+                navController = navController,
+                adminViewModel = adminViewModel
+            )
         }
     }
 }
