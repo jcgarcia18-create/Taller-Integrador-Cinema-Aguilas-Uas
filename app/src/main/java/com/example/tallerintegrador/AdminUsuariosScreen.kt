@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,10 +40,24 @@ fun AdminUsuariosScreen(
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
+    var showDetailsDialog by remember { mutableStateOf(false) }
     var selectedUsuario by remember { mutableStateOf<Usuario?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Usuarios filtrados
+    val usuariosFiltrados = remember(usuarios, searchQuery) {
+        if (searchQuery.isEmpty()) {
+            usuarios
+        } else {
+            usuarios.filter {
+                it.name.contains(searchQuery, ignoreCase = true) ||
+                        it.email.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
 
     LaunchedEffect(error) {
         error?.let {
@@ -55,17 +70,33 @@ fun AdminUsuariosScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Gestionar Usuarios",
-                        color = Yellow,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            "Gestionar Usuarios",
+                            color = Yellow,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "${usuarios.size} usuarios registrados",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { adminViewModel.refresh() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Actualizar",
                             tint = Color.White
                         )
                     }
@@ -89,84 +120,122 @@ fun AdminUsuariosScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else if (usuarios.isEmpty()) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.People,
-                        contentDescription = "Sin usuarios",
-                        tint = Color.White.copy(alpha = 0.3f),
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "No hay usuarios registrados",
-                        color = Color.White.copy(alpha = 0.6f)
-                    )
-                }
+                EmptyUsersState(modifier = Modifier.align(Alignment.Center))
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // RESUMEN
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Yellow.copy(alpha = 0.15f)
-                            )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Barra de búsqueda
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        modifier = Modifier.padding(16.dp)
+                    )
+
+                    // Resumen de estadísticas
+                    StatsRow(
+                        totalUsuarios = usuarios.size,
+                        usuariosActivos = usuarios.count { it.favoritosCount > 0 },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Lista de usuarios
+                    if (usuariosFiltrados.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column {
-                                    Text(
-                                        "Total de usuarios",
-                                        color = Color.White.copy(alpha = 0.7f),
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        "${usuarios.size}",
-                                        color = Yellow,
-                                        fontSize = 28.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(
-                                    imageVector = Icons.Filled.People,
-                                    contentDescription = "Usuarios",
-                                    tint = Yellow,
-                                    modifier = Modifier.size(48.dp)
+                                    Icons.Filled.SearchOff,
+                                    contentDescription = null,
+                                    tint = Color.White.copy(alpha = 0.3f),
+                                    modifier = Modifier.size(64.dp)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    "No se encontraron usuarios",
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(usuariosFiltrados) { usuario ->
+                                UsuarioCard(
+                                    usuario = usuario,
+                                    onDetails = {
+                                        selectedUsuario = usuario
+                                        showDetailsDialog = true
+                                    },
+                                    onEdit = {
+                                        selectedUsuario = usuario
+                                        showEditDialog = true
+                                    },
+                                    onDelete = {
+                                        selectedUsuario = usuario
+                                        showDeleteDialog = true
+                                    }
                                 )
                             }
                         }
                     }
-
-                    // LISTA DE USUARIOS
-                    items(usuarios) { usuario ->
-                        UsuarioCard(
-                            usuario = usuario,
-                            onEdit = {
-                                selectedUsuario = usuario
-                                showEditDialog = true
-                            },
-                            onDelete = {
-                                selectedUsuario = usuario
-                                showDeleteDialog = true
-                            }
-                        )
-                    }
                 }
             }
         }
+    }
+
+    // DIÁLOGO DE DETALLES
+    if (showDetailsDialog && selectedUsuario != null) {
+        AlertDialog(
+            onDismissRequest = { showDetailsDialog = false },
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Yellow),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = selectedUsuario?.name?.take(1)?.uppercase() ?: "",
+                        color = DarkBlue,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            title = {
+                Text(
+                    "Detalles del Usuario",
+                    color = Yellow,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    DetailRow("Nombre", selectedUsuario?.name ?: "")
+                    DetailRow("Email", selectedUsuario?.email ?: "")
+                    DetailRow("ID", selectedUsuario?.id.toString() ?: "")
+                    DetailRow("Favoritos", "${selectedUsuario?.favoritosCount} películas")
+                    DetailRow("Registro", selectedUsuario?.createdAt ?: "N/A")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDetailsDialog = false }) {
+                    Text("Cerrar", color = Yellow)
+                }
+            },
+            containerColor = DarkBlue,
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 
     // DIÁLOGO ELIMINAR
@@ -189,18 +258,35 @@ fun AdminUsuariosScreen(
                 )
             },
             text = {
-                Text(
-                    "¿Estás seguro de que deseas eliminar a ${selectedUsuario?.name}?\n\n" +
-                            "Esta acción eliminará:\n" +
-                            "• Cuenta del usuario\n" +
-                            "• Sus favoritos (${selectedUsuario?.favoritosCount})\n" +
-                            "• Todo su historial\n\n" +
-                            "Esta acción no se puede deshacer.",
-                    color = Color.White
-                )
+                Column {
+                    Text(
+                        "¿Estás seguro de eliminar a ${selectedUsuario?.name}?",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        "Esta acción eliminará:",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        BulletPoint("Cuenta del usuario")
+                        BulletPoint("Sus ${selectedUsuario?.favoritosCount} favoritos")
+                        BulletPoint("Todo su historial")
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        "⚠️ Esta acción no se puede deshacer",
+                        color = Color.Red,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         selectedUsuario?.let { usuario ->
                             adminViewModel.eliminarUsuario(usuario.id)
@@ -210,9 +296,10 @@ fun AdminUsuariosScreen(
                         }
                         showDeleteDialog = false
                         selectedUsuario = null
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text("Eliminar", color = Color.Red, fontWeight = FontWeight.Bold)
+                    Text("Eliminar", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -240,11 +327,14 @@ fun AdminUsuariosScreen(
                 )
             },
             text = {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = nuevoNombre,
                         onValueChange = { nuevoNombre = it },
                         label = { Text("Nombre", color = Yellow) },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Person, null, tint = Yellow)
+                        },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -255,11 +345,14 @@ fun AdminUsuariosScreen(
                             unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
                         )
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+
                     OutlinedTextField(
                         value = nuevoEmail,
                         onValueChange = { nuevoEmail = it },
                         label = { Text("Email", color = Yellow) },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Email, null, tint = Yellow)
+                        },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -273,7 +366,7 @@ fun AdminUsuariosScreen(
                 }
             },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         selectedUsuario?.let { usuario ->
                             adminViewModel.actualizarUsuario(
@@ -288,9 +381,10 @@ fun AdminUsuariosScreen(
                         showEditDialog = false
                         selectedUsuario = null
                     },
-                    enabled = nuevoNombre.isNotBlank() && nuevoEmail.isNotBlank()
+                    enabled = nuevoNombre.isNotBlank() && nuevoEmail.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Yellow)
                 ) {
-                    Text("Guardar", color = Yellow, fontWeight = FontWeight.Bold)
+                    Text("Guardar", color = DarkBlue, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -305,8 +399,80 @@ fun AdminUsuariosScreen(
 }
 
 @Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier.fillMaxWidth(),
+        placeholder = { Text("Buscar usuarios...", color = Color.White.copy(alpha = 0.5f)) },
+        leadingIcon = {
+            Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = Yellow)
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(Icons.Filled.Close, contentDescription = "Limpiar", tint = Yellow)
+                }
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            cursorColor = Yellow,
+            focusedBorderColor = Yellow,
+            unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        singleLine = true
+    )
+}
+
+@Composable
+fun StatsRow(
+    totalUsuarios: Int,
+    usuariosActivos: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Yellow.copy(alpha = 0.15f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatItem("Total", totalUsuarios.toString(), Icons.Filled.People)
+            VerticalDivider(modifier = Modifier.height(40.dp))
+            StatItem("Activos", usuariosActivos.toString(), Icons.Filled.PersonOutline)
+            VerticalDivider(modifier = Modifier.height(40.dp))
+            StatItem("Inactivos", (totalUsuarios - usuariosActivos).toString(), Icons.Filled.PersonOff)
+        }
+    }
+}
+
+@Composable
+fun StatItem(label: String, value: String, icon: ImageVector) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(icon, contentDescription = label, tint = Yellow, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(value, color = Yellow, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(label, color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+    }
+}
+
+@Composable
 fun UsuarioCard(
     usuario: Usuario,
+    onDetails: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -317,80 +483,141 @@ fun UsuarioCard(
             containerColor = Color.White.copy(alpha = 0.05f)
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Avatar
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(Yellow),
-                contentAlignment = Alignment.Center
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = usuario.name.take(1).uppercase(),
-                    color = DarkBlue,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Info
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = usuario.name,
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = usuario.email,
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // Avatar
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Yellow),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Favoritos",
-                        tint = Color(0xFFE91E63),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${usuario.favoritosCount} favoritos",
-                        color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 12.sp
+                        text = usuario.name.take(1).uppercase(),
+                        color = DarkBlue,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Info
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = usuario.name,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = usuario.email,
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Filled.Favorite,
+                            contentDescription = null,
+                            tint = Color(0xFFE91E63),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            "${usuario.favoritosCount} favoritos",
+                            color = Color.White.copy(alpha = 0.6f),
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Acciones
-            Column {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Editar",
-                        tint = Yellow
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onDetails,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Yellow
                     )
+                ) {
+                    Icon(Icons.Filled.Info, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Detalles", fontSize = 12.sp)
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Eliminar",
-                        tint = Color.Red
+
+                OutlinedButton(
+                    onClick = onEdit,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color(0xFF2196F3)
                     )
+                ) {
+                    Icon(Icons.Filled.Edit, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Editar", fontSize = 12.sp)
+                }
+
+                OutlinedButton(
+                    onClick = onDelete,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Red
+                    )
+                ) {
+                    Icon(Icons.Filled.Delete, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Eliminar", fontSize = 12.sp)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DetailRow(label: String, value: String) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(label, color = Yellow, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text(value, color = Color.White, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun BulletPoint(text: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        Text("• ", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+        Text(text, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun EmptyUsersState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            Icons.Filled.PeopleOutline,
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.3f),
+            modifier = Modifier.size(64.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            "No hay usuarios registrados",
+            color = Color.White.copy(alpha = 0.6f),
+            fontSize = 16.sp
+        )
     }
 }

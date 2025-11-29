@@ -17,6 +17,7 @@ data class Usuario(
     val id: Int,
     val name: String,
     val email: String,
+    val role: String = "user",
     val createdAt: String?,
     val favoritosCount: Int = 0
 )
@@ -74,7 +75,8 @@ class AdminViewModel @Inject constructor(
         "admin@cinemaaguilas.com",
         "jcgarcia@uas.edu.mx",
         "administrador@uas.edu.mx",
-        "fer@gmail.com"
+        "fer@gmail.com",
+        "cinemasaguilasuas@admin.com"
     )
 
     init {
@@ -100,10 +102,11 @@ class AdminViewModel @Inject constructor(
             _error.value = null
 
             try {
-                cargarUsuarios()
-                cargarPeliculas()
-                cargarLogs()
-                calcularEstadisticas()
+                // Cargar en paralelo
+                launch { cargarEstadisticas() }
+                launch { cargarUsuarios() }
+                launch { cargarPeliculas() }
+                launch { cargarLogs() }
             } catch (e: Exception) {
                 _error.value = "Error al cargar dashboard: ${e.message}"
             } finally {
@@ -112,15 +115,25 @@ class AdminViewModel @Inject constructor(
         }
     }
 
+    private suspend fun cargarEstadisticas() {
+        try {
+            val response = apiService.getAdminDashboard("Bearer ${tokenManager.getToken()}")
+            _estadisticas.value = EstadisticasAdmin(
+                totalUsuarios = response.totalUsuarios,
+                totalPeliculas = response.totalPeliculas,
+                totalFavoritos = response.totalFavoritos,
+                peliculaMasPopular = response.peliculaMasPopular,
+                usuarioMasActivo = response.usuarioMasActivo
+            )
+        } catch (e: Exception) {
+            throw Exception("Error cargando estadísticas: ${e.message}")
+        }
+    }
+
     private suspend fun cargarUsuarios() {
         try {
-            // MOCK DATA para desarrollo
-            _usuarios.value = listOf(
-                Usuario(1, "Juan Pérez", "juan@example.com", "2025-01-15", 12),
-                Usuario(2, "María García", "maria@example.com", "2025-02-20", 8),
-                Usuario(3, "Carlos López", "carlos@example.com", "2025-03-10", 15),
-                Usuario(4, "Ana Martínez", "ana@example.com", "2025-04-05", 3)
-            )
+            val usuarios = apiService.getAdminUsers("Bearer ${tokenManager.getToken()}")
+            _usuarios.value = usuarios
         } catch (e: Exception) {
             throw Exception("Error cargando usuarios: ${e.message}")
         }
@@ -128,7 +141,7 @@ class AdminViewModel @Inject constructor(
 
     private suspend fun cargarPeliculas() {
         try {
-            val peliculas = apiService.getPeliculas()
+            val peliculas = apiService.getAdminPeliculas("Bearer ${tokenManager.getToken()}")
             _peliculas.value = peliculas
         } catch (e: Exception) {
             throw Exception("Error cargando películas: ${e.message}")
@@ -137,36 +150,11 @@ class AdminViewModel @Inject constructor(
 
     private suspend fun cargarLogs() {
         try {
-            // MOCK DATA para desarrollo
-            _logs.value = listOf(
-                LogActividad(1, 2, "María García", "Agregar Favorito", "Inception", "2025-11-27 10:30"),
-                LogActividad(2, 3, "Carlos López", "Login", "Inicio de sesión exitoso", "2025-11-27 09:15"),
-                LogActividad(3, 1, "Juan Pérez", "Eliminar Favorito", "The Matrix", "2025-11-26 18:45"),
-                LogActividad(4, 4, "Ana Martínez", "Registro", "Cuenta creada", "2025-11-26 14:20")
-            )
+            val logs = apiService.getAdminLogs("Bearer ${tokenManager.getToken()}")
+            _logs.value = logs
         } catch (e: Exception) {
             throw Exception("Error cargando logs: ${e.message}")
         }
-    }
-
-    private fun calcularEstadisticas() {
-        val totalUsuarios = _usuarios.value.size
-        val totalPeliculas = _peliculas.value.size
-        val totalFavoritos = _usuarios.value.sumOf { it.favoritosCount }
-
-        val peliculaMasPopular = _peliculas.value.maxByOrNull { pelicula ->
-            _usuarios.value.count { it.favoritosCount > 0 }
-        }?.title
-
-        val usuarioMasActivo = _usuarios.value.maxByOrNull { it.favoritosCount }?.name
-
-        _estadisticas.value = EstadisticasAdmin(
-            totalUsuarios = totalUsuarios,
-            totalPeliculas = totalPeliculas,
-            totalFavoritos = totalFavoritos,
-            peliculaMasPopular = peliculaMasPopular,
-            usuarioMasActivo = usuarioMasActivo
-        )
     }
 
     // ===== GESTIÓN DE USUARIOS =====
@@ -177,8 +165,17 @@ class AdminViewModel @Inject constructor(
 
             _isLoading.value = true
             try {
+                apiService.deleteAdminUser(
+                    authHeader = "Bearer ${tokenManager.getToken()}",
+                    userId = usuarioId
+                )
+
+                // Actualizar lista local
                 _usuarios.value = _usuarios.value.filter { it.id != usuarioId }
-                calcularEstadisticas()
+
+                // Recalcular estadísticas
+                cargarEstadisticas()
+
             } catch (e: Exception) {
                 _error.value = "Error al eliminar usuario: ${e.message}"
             } finally {
@@ -193,6 +190,16 @@ class AdminViewModel @Inject constructor(
 
             _isLoading.value = true
             try {
+                apiService.updateAdminUser(
+                    authHeader = "Bearer ${tokenManager.getToken()}",
+                    userId = usuarioId,
+                    request = mapOf(
+                        "name" to nuevoNombre,
+                        "email" to nuevoEmail
+                    )
+                )
+
+                // Actualizar lista local
                 _usuarios.value = _usuarios.value.map { usuario ->
                     if (usuario.id == usuarioId) {
                         usuario.copy(name = nuevoNombre, email = nuevoEmail)
@@ -200,6 +207,7 @@ class AdminViewModel @Inject constructor(
                         usuario
                     }
                 }
+
             } catch (e: Exception) {
                 _error.value = "Error al actualizar usuario: ${e.message}"
             } finally {
@@ -216,8 +224,17 @@ class AdminViewModel @Inject constructor(
 
             _isLoading.value = true
             try {
+                apiService.deleteAdminPelicula(
+                    authHeader = "Bearer ${tokenManager.getToken()}",
+                    peliculaId = peliculaId
+                )
+
+                // Actualizar lista local
                 _peliculas.value = _peliculas.value.filter { it.id != peliculaId }
-                calcularEstadisticas()
+
+                // Recalcular estadísticas
+                cargarEstadisticas()
+
             } catch (e: Exception) {
                 _error.value = "Error al eliminar película: ${e.message}"
             } finally {
