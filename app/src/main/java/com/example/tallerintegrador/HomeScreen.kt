@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.tallerintegrador.data.model.pelicula
@@ -28,6 +29,7 @@ import com.example.tallerintegrador.ui.theme.DarkBlue
 import com.example.tallerintegrador.ui.theme.Yellow
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.auth.AuthViewModel
+import com.example.tallerintegrador.feature.admin.AdminViewModel
 
 @Composable
 fun HomeScreen(
@@ -201,10 +203,12 @@ fun HomeScreenContent(
                 Box(modifier = Modifier.padding(padding)) {
                     authViewModel?.let { auth ->
                         favoritosViewModel?.let { favs ->
+                            val adminViewModel: AdminViewModel = hiltViewModel()
                             PerfilScreen(
                                 navController = navController,
                                 authViewModel = auth,
-                                favoritosViewModel = favs
+                                favoritosViewModel = favs,
+                                adminViewModel = adminViewModel
                             )
                         }
                     }

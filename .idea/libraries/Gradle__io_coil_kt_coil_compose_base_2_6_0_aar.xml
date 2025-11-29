@@ -4,6 +4,9 @@
       <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/0e17dee76e5062343efc5cb72b26114c/transformed/coil-compose-base-2.6.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/0e17dee76e5062343efc5cb72b26114c/transformed/coil-compose-base-2.6.0/AndroidManifest.xml" />
     </CLASSES>
+    <DOCUMENTATION>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.coil-kt/coil-compose-base/2.6.0/73d47a4b2bd159bde673e2af089bca02b9f910b2/coil-compose-base-2.6.0-javadoc.jar!/" />
+    </DOCUMENTATION>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.coil-kt/coil-compose-base/2.6.0/73d47a4b2bd159bde673e2af089bca02b9f910b2/coil-compose-base-2.6.0-javadoc.jar!/" />
     </JAVADOC>

@@ -4,6 +4,9 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/hilt-core/2.51/5288817b2e075f2e1dd30f3bf906eb57e7d43854/hilt-core-2.51.jar!/" />
     </CLASSES>
+    <DOCUMENTATION>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/hilt-core/2.51/90d223c4cddbbd93f1a86fb8bd70651282dcb5e/hilt-core-2.51-javadoc.jar!/" />
+    </DOCUMENTATION>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/hilt-core/2.51/90d223c4cddbbd93f1a86fb8bd70651282dcb5e/hilt-core-2.51-javadoc.jar!/" />
     </JAVADOC>

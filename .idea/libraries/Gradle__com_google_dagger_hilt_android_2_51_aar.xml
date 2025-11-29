@@ -4,6 +4,9 @@
       <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/9d458c3b8528975eb76cf55190ad93e2/transformed/hilt-android-2.51/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/9d458c3b8528975eb76cf55190ad93e2/transformed/hilt-android-2.51/AndroidManifest.xml" />
     </CLASSES>
+    <DOCUMENTATION>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/hilt-android/2.51/d846926da138a7b5c3d7667f65a628a3504b84d3/hilt-android-2.51-javadoc.jar!/" />
+    </DOCUMENTATION>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/hilt-android/2.51/d846926da138a7b5c3d7667f65a628a3504b84d3/hilt-android-2.51-javadoc.jar!/" />
     </JAVADOC>
