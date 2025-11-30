@@ -101,17 +101,15 @@ class AdminViewModel @Inject constructor(
             _isLoading.value = true
             _error.value = null
 
-            try {
-                // Cargar en paralelo
-                launch { cargarEstadisticas() }
-                launch { cargarUsuarios() }
-                launch { cargarPeliculas() }
-                launch { cargarLogs() }
-            } catch (e: Exception) {
-                _error.value = "Error al cargar dashboard: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
+            // Cargar en paralelo
+            launch { cargarEstadisticas() }
+            launch { cargarUsuarios() }
+            launch { cargarPeliculas() }
+            launch { cargarLogs() }
+
+            // El isLoading se puede manejar de forma más granular si es necesario,
+            // pero por ahora lo quitamos al final de la carga inicial.
+            _isLoading.value = false
         }
     }
 
@@ -126,7 +124,7 @@ class AdminViewModel @Inject constructor(
                 usuarioMasActivo = response.usuarioMasActivo
             )
         } catch (e: Exception) {
-            throw Exception("Error cargando estadísticas: ${e.message}")
+            _error.value = "Error cargando estadísticas: endpoint no encontrado (404)."
         }
     }
 
@@ -135,7 +133,7 @@ class AdminViewModel @Inject constructor(
             val usuarios = apiService.getAdminUsers("Bearer ${tokenManager.getToken()}")
             _usuarios.value = usuarios
         } catch (e: Exception) {
-            throw Exception("Error cargando usuarios: ${e.message}")
+            _error.value = "Error cargando usuarios: ${e.message}"
         }
     }
 
@@ -144,7 +142,7 @@ class AdminViewModel @Inject constructor(
             val peliculas = apiService.getAdminPeliculas("Bearer ${tokenManager.getToken()}")
             _peliculas.value = peliculas
         } catch (e: Exception) {
-            throw Exception("Error cargando películas: ${e.message}")
+            _error.value = "Error cargando películas: ${e.message}"
         }
     }
 
@@ -153,7 +151,7 @@ class AdminViewModel @Inject constructor(
             val logs = apiService.getAdminLogs("Bearer ${tokenManager.getToken()}")
             _logs.value = logs
         } catch (e: Exception) {
-            throw Exception("Error cargando logs: ${e.message}")
+            _error.value = "Error cargando logs: ${e.message}"
         }
     }
 
