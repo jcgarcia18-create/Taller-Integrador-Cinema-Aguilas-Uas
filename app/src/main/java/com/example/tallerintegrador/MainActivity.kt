@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
@@ -181,6 +182,45 @@ fun MainNavigation() {
 
             AdminLogsScreen(
                 navController = navController,
+                adminViewModel = adminViewModel
+            )
+        }
+        // RUTA PARA CREAR (SIN PARÁMETROS)
+        composable("admin/peliculas/nueva") {
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            // Asegurarse de que las películas estén cargadas
+            LaunchedEffect(Unit) {
+                adminViewModel.cargarPeliculas()
+            }
+
+            AdminPeliculaFormScreen(
+                navController = navController,
+                peliculaId = null,
+                adminViewModel = adminViewModel
+            )
+        }
+
+        // RUTA PARA EDITAR (CON ID)
+        composable(
+            route = "admin/peliculas/editar/{peliculaId}",
+            arguments = listOf(
+                navArgument("peliculaId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val peliculaId = backStackEntry.arguments?.getInt("peliculaId") ?: return@composable
+            val adminViewModel: AdminViewModel = hiltViewModel()
+
+            // ✅ IMPORTANTE: Cargar películas antes de mostrar el formulario
+            LaunchedEffect(Unit) {
+                adminViewModel.cargarPeliculas()
+            }
+
+            AdminPeliculaFormScreen(
+                navController = navController,
+                peliculaId = peliculaId,
                 adminViewModel = adminViewModel
             )
         }

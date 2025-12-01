@@ -125,7 +125,9 @@ fun AdminPeliculasScreen(
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* TODO: Agregar película */ }) {
+                    IconButton(onClick = {
+                        navController.navigate("admin/peliculas/nueva")
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = "Agregar película",

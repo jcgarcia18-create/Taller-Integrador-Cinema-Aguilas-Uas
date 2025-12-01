@@ -137,14 +137,6 @@ class AdminViewModel @Inject constructor(
         }
     }
 
-    private suspend fun cargarPeliculas() {
-        try {
-            val peliculas = apiService.getAdminPeliculas("Bearer ${tokenManager.getToken()}")
-            _peliculas.value = peliculas
-        } catch (e: Exception) {
-            _error.value = "Error cargando películas: ${e.message}"
-        }
-    }
 
     private suspend fun cargarLogs() {
         try {
@@ -241,6 +233,104 @@ class AdminViewModel @Inject constructor(
         }
     }
 
+    // Crea peliculas nuevas
+    fun crearPelicula(
+        title: String,
+        description: String,
+        posterUrl: String,
+        videoUrl: String,
+        durationMinutes: Int,
+        genre: String,
+        onSuccess: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            if (!esAdmin()) return@launch
+
+            _isLoading.value = true
+            try {
+                val nuevaPelicula = apiService.createAdminPelicula(
+                    authHeader = "Bearer ${tokenManager.getToken()}",
+                    request = mapOf(
+                        "title" to title,
+                        "description" to description,
+                        "poster_url" to posterUrl,
+                        "video_url" to videoUrl,
+                        "duration_minutes" to durationMinutes.toString(),
+                        "genre" to genre
+                    )
+                )
+
+                // Actualizar lista local
+                _peliculas.value = _peliculas.value + nuevaPelicula
+
+                // Recalcular estadísticas
+                cargarEstadisticas()
+
+                onSuccess()
+
+            } catch (e: Exception) {
+                _error.value = "Error al crear película: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun actualizarPelicula(
+        peliculaId: Int,
+        title: String,
+        description: String,
+        posterUrl: String,
+        videoUrl: String,
+        durationMinutes: Int,
+        genre: String,
+        onSuccess: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            if (!esAdmin()) return@launch
+
+            _isLoading.value = true
+            try {
+                apiService.updateAdminPelicula(
+                    authHeader = "Bearer ${tokenManager.getToken()}",
+                    peliculaId = peliculaId,
+                    request = mapOf(
+                        "title" to title,
+                        "description" to description,
+                        "poster_url" to posterUrl,
+                        "video_url" to videoUrl,
+                        "duration_minutes" to durationMinutes.toString(),
+                        "genre" to genre
+                    )
+                )
+
+                // Actualizar lista local
+                _peliculas.value = _peliculas.value.map { pelicula ->
+                    if (pelicula.id == peliculaId) {
+                        pelicula.copy(
+                            title = title,
+                            description = description,
+                            posterUrl = posterUrl,
+                            videoUrl = videoUrl,
+                            durationMinutes = durationMinutes,
+                            genre = genre
+                        )
+                    } else {
+                        pelicula
+                    }
+                }
+
+                onSuccess()
+
+            } catch (e: Exception) {
+                _error.value = "Error al actualizar película: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
     // ===== UTILIDADES =====
 
     fun limpiarError() {
@@ -250,4 +340,16 @@ class AdminViewModel @Inject constructor(
     fun refresh() {
         cargarDashboard()
     }
+
+     suspend fun cargarPeliculas() {
+        if (_peliculas.value.isEmpty()) {
+            try {
+                val peliculas = apiService.getAdminPeliculas("Bearer ${tokenManager.getToken()}")
+                _peliculas.value = peliculas
+            } catch (e: Exception) {
+                _error.value = "Error cargando películas: ${e.message}"
+            }
+        }
+    }
+
 }

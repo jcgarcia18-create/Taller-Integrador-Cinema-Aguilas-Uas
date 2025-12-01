@@ -85,6 +85,19 @@ interface ApiService {
         @Path("id") peliculaId: Int
     ): MessageResponse
 
+    @POST("api/admin/peliculas")
+    suspend fun createAdminPelicula(
+        @Header("Authorization") authHeader: String,
+        @Body request: Map<String, String>
+    ): pelicula
+
+    @PUT("api/admin/peliculas/{id}")
+    suspend fun updateAdminPelicula(
+        @Header("Authorization") authHeader: String,
+        @Path("id") peliculaId: Int,
+        @Body request: Map<String, String>
+    ): MessageResponse
+
     @GET("api/admin/logs")
     suspend fun getAdminLogs(
         @Header("Authorization") authHeader: String

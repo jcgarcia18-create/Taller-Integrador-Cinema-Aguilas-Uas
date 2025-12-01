@@ -44,7 +44,7 @@ fun CategoriasScreen(navController: NavController? = null) {
         Categoria("Romance", Icons.Filled.FavoriteBorder, Color(0xFFF48FB1)),
         Categoria("Thriller", Icons.Filled.Lock, Color(0xFF607D8B)),
         Categoria("Animación", Icons.Filled.Star, Color(0xFF4CAF50)),
-        Categoria("Aventura", Icons.Filled.Place, Color(0xFF00BCD4)),
+        Categoria("Aventuras", Icons.Filled.Place, Color(0xFF00BCD4)),
         Categoria("Fantasía", Icons.Filled.Info, Color(0xFF673AB7)),
         Categoria("Documental", Icons.Filled.DateRange, Color(0xFF795548)),
         Categoria("Crimen", Icons.Filled.Build, Color(0xFF424242))
