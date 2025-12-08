@@ -6,7 +6,7 @@ import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.data.network.ApiService
 
 /**
- * ✅ Repository con estrategia CACHE-FIRST
+ * Repository con estrategia CACHE-FIRST
  *
  * 1. Intenta obtener datos del cache
  * 2. Si no hay cache o está expirado, pide a la red
@@ -18,7 +18,7 @@ class PeliculaRepository(
 ) {
 
     /**
-     * ✅ Obtiene todas las películas con cache inteligente
+     * Obtiene todas las películas con cache inteligente
      *
      * - Primero intenta del cache (si es válido)
      * - Si no hay cache, pide a la red
@@ -43,7 +43,7 @@ class PeliculaRepository(
     }
 
     /**
-     * ✅ Obtiene una película específica por ID con cache
+     * Obtiene una película específica por ID con cache
      *
      * - Primero busca en cache
      * - Si no está, pide a la API

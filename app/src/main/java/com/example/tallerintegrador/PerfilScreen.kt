@@ -26,15 +26,7 @@ import com.example.tallerintegrador.auth.AuthViewModel
 import com.example.tallerintegrador.feature.admin.AdminViewModel
 import com.example.tallerintegrador.data.local.TokenManager
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 
-/**
- * ✅ PERFIL FUNCIONAL
- * - Carga datos reales del usuario
- * - Muestra estadísticas dinámicas
- * - Gestiona cierre de sesión correctamente
- */
 @Composable
 fun PerfilScreen(
     navController: NavController?,
@@ -47,16 +39,13 @@ fun PerfilScreen(
     val context = LocalContext.current
     val tokenManager = remember { TokenManager(context.applicationContext) }
 
-    // ✅ Obtener información del usuario
     val userName = tokenManager.getUserName() ?: "Usuario"
     val userEmail = tokenManager.getUserEmail() ?: "usuario@ejemplo.com"
     val userId = tokenManager.getUserId()
 
-    // ✅ Estadísticas reactivas
     val favoritos by favoritosViewModel.favoritos.collectAsState()
     val totalFavoritos = favoritos.size
 
-    // ✅ Cargar favoritos al entrar
     LaunchedEffect(Unit) {
         favoritosViewModel.cargarFavoritos()
     }
@@ -64,13 +53,13 @@ fun PerfilScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBlue)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // ===== HEADER DEL PERFIL =====
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Yellow.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -79,37 +68,34 @@ fun PerfilScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Yellow),
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.Person,
                     contentDescription = "Avatar",
-                    tint = DarkBlue,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(60.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Nombre del usuario
             Text(
                 text = userName,
-                color = Yellow,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            // Email del usuario
             Text(
                 text = userEmail,
-                color = Color.White.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 fontSize = 16.sp
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ ESTADÍSTICAS DINÁMICAS
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -120,7 +106,7 @@ fun PerfilScreen(
                     modifier = Modifier
                         .width(1.dp)
                         .height(40.dp),
-                    color = Color.White.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
 
                 StatItem(label = "Favoritas", value = totalFavoritos.toString())
@@ -129,7 +115,7 @@ fun PerfilScreen(
                     modifier = Modifier
                         .width(1.dp)
                         .height(40.dp),
-                    color = Color.White.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
 
                 StatItem(label = "Listas", value = "1")
@@ -142,10 +128,9 @@ fun PerfilScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            // ===== PANEL DE ADMINISTRACIÓN ===== ✅ NUEVO
             if (isAdmin) {
                 item {
-                    SectionHeader("Administración")
+                    SectionHeaderProfile("Administración")
                 }
 
                 item {
@@ -155,7 +140,7 @@ fun PerfilScreen(
                             .padding(horizontal = 16.dp, vertical = 6.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Yellow.copy(alpha = 0.15f)
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         ),
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = 4.dp
@@ -172,13 +157,13 @@ fun PerfilScreen(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(CircleShape)
-                                    .background(Yellow.copy(alpha = 0.3f)),
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Shield,
                                     contentDescription = "Admin",
-                                    tint = Yellow,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -189,7 +174,7 @@ fun PerfilScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = "Panel de Administración",
-                                        color = Yellow,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -210,7 +195,7 @@ fun PerfilScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Gestionar usuarios, películas y más",
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                                     fontSize = 13.sp
                                 )
                             }
@@ -218,13 +203,13 @@ fun PerfilScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                 contentDescription = "Ir",
-                                tint = Yellow
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
                 }
             }
-            // ===== FIN PANEL DE ADMINISTRACIÓN =====
+
             item {
                 ProfileOption(
                     icon = Icons.Filled.Person,
@@ -243,7 +228,6 @@ fun PerfilScreen(
                     subtitle = "$totalFavoritos películas guardadas",
                     onClick = {
                         navController?.navigate("home")
-                        // Cambiar a tab de favoritos (necesitarías pasar el tab como argumento)
                     }
                 )
             }
@@ -315,7 +299,7 @@ fun PerfilScreen(
             title = {
                 Text(
                     text = "Cerrar Sesión",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -323,12 +307,12 @@ fun PerfilScreen(
                 Column {
                     Text(
                         text = "¿Estás seguro que deseas cerrar sesión?",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Tendrás que iniciar sesión nuevamente para acceder a tus favoritos.",
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         fontSize = 14.sp
                     )
                 }
@@ -337,12 +321,8 @@ fun PerfilScreen(
                 TextButton(
                     onClick = {
                         showLogoutDialog = false
-
-                        // ✅ CERRAR SESIÓN COMPLETO
                         authViewModel.logout()
                         favoritosViewModel.clearCache()
-
-                        // ✅ Navegar y limpiar stack
                         navController?.navigate("welcome") {
                             popUpTo(0) { inclusive = true }
                         }
@@ -353,18 +333,15 @@ fun PerfilScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
 }
 
-/**
- * ✅ Componente de estadística
- */
 @Composable
 fun StatItem(label: String, value: String) {
     Column(
@@ -372,21 +349,18 @@ fun StatItem(label: String, value: String) {
     ) {
         Text(
             text = value,
-            color = Yellow,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = label,
-            color = Color.White.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             fontSize = 14.sp
         )
     }
 }
 
-/**
- * ✅ Componente de opción del perfil
- */
 @Composable
 fun ProfileOption(
     icon: ImageVector,
@@ -401,7 +375,7 @@ fun ProfileOption(
             .padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -414,7 +388,6 @@ fun ProfileOption(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Ícono
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -423,44 +396,53 @@ fun ProfileOption(
                         if (isDestructive)
                             Color.Red.copy(alpha = 0.2f)
                         else
-                            Yellow.copy(alpha = 0.2f)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = if (isDestructive) Color.Red else Yellow,
+                    tint = if (isDestructive) Color.Red else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Texto
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = title,
-                    color = if (isDestructive) Color.Red else Color.White,
+                    color = if (isDestructive) Color.Red else MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = subtitle,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
 
-            // Flecha
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Ir",
-                tint = Color.White.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
+}
+
+@Composable
+fun SectionHeaderProfile(title: String) {
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    )
 }

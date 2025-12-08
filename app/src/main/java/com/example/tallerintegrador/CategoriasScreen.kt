@@ -30,9 +30,6 @@ data class Categoria(
     val color: Color
 )
 
-/**
- * ✅ ACTUALIZADO: Ahora recibe NavController para navegación
- */
 @Composable
 fun CategoriasScreen(navController: NavController? = null) {
     val categorias = listOf(
@@ -53,12 +50,12 @@ fun CategoriasScreen(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBlue)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Text(
             text = "Explorar Categorías",
-            color = Yellow,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -73,7 +70,6 @@ fun CategoriasScreen(navController: NavController? = null) {
                 CategoriaCard(
                     categoria = categoria,
                     onClick = {
-                        // ✅ NUEVO: Navega a la pantalla de películas por género
                         navController?.navigate("peliculas_por_genero/${categoria.nombre}")
                     }
                 )
@@ -82,16 +78,13 @@ fun CategoriasScreen(navController: NavController? = null) {
     }
 }
 
-/**
- * ✅ ACTUALIZADO: Ahora recibe onClick como parámetro
- */
 @Composable
 fun CategoriaCard(categoria: Categoria, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .clickable { onClick() }, // ✅ NUEVO: Click funcional
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = categoria.color.copy(alpha = 0.2f)
@@ -116,7 +109,7 @@ fun CategoriaCard(categoria: Categoria, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = categoria.nombre,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center

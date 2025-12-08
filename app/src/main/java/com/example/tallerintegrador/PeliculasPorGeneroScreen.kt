@@ -19,11 +19,9 @@ import androidx.navigation.NavController
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 
 /**
- * ✅ NUEVA PANTALLA: Muestra películas filtradas por género
+ * Pantalla de películas filtradas por género con soporte de tema
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,13 +56,13 @@ fun PeliculasPorGeneroScreen(
                     Column {
                         Text(
                             text = genero,
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "${peliculasFiltradas.size} películas",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 14.sp
                         )
                     }
@@ -74,17 +72,17 @@ fun PeliculasPorGeneroScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -98,11 +96,11 @@ fun PeliculasPorGeneroScreen(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CircularProgressIndicator(color = Yellow)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Cargando películas...",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 16.sp
                         )
                     }
@@ -123,14 +121,14 @@ fun PeliculasPorGeneroScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "No hay películas de $genero",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Intenta con otro género",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 14.sp
                         )
                     }

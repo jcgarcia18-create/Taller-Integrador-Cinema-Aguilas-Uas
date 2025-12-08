@@ -22,19 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tallerintegrador.auth.AuthViewModel
 import com.example.tallerintegrador.data.local.TokenManager
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
-
-/**
- * ✅ PANTALLA DE PRIVACIDAD Y SEGURIDAD
- *
- * Características:
- * - Gestión de privacidad
- * - Control parental
- * - Seguridad de cuenta
- * - Historial de actividad
- */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +65,7 @@ fun PrivacidadScreen(
                 title = {
                     Text(
                         "Privacidad y Seguridad",
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -86,17 +74,17 @@ fun PrivacidadScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -105,7 +93,7 @@ fun PrivacidadScreen(
         ) {
             // PRIVACIDAD
             item {
-                SectionHeader("Privacidad")
+                SectionHeaderPriv("Privacidad")
             }
 
             item {
@@ -150,7 +138,7 @@ fun PrivacidadScreen(
 
             // SEGURIDAD
             item {
-                SectionHeader("Seguridad")
+                SectionHeaderPriv("Seguridad")
             }
 
             item {
@@ -193,7 +181,7 @@ fun PrivacidadScreen(
 
             // CONTROL PARENTAL
             item {
-                SectionHeader("Control Parental")
+                SectionHeaderPriv("Control Parental")
             }
 
             item {
@@ -214,7 +202,7 @@ fun PrivacidadScreen(
             }
 
             item {
-                InfoCard(
+                InfoCardPriv(
                     icon = Icons.Filled.Info,
                     title = "Control Parental",
                     description = "Restringe el acceso a contenido para adultos y permite " +
@@ -224,11 +212,11 @@ fun PrivacidadScreen(
 
             // GESTIÓN DE CUENTA
             item {
-                SectionHeader("Gestión de Cuenta")
+                SectionHeaderPriv("Gestión de Cuenta")
             }
 
             item {
-                InfoCard(
+                InfoCardPriv(
                     icon = Icons.Filled.AccountCircle,
                     title = "Información de Cuenta",
                     description = "Usuario: ${tokenManager.getUserName()}\n" +
@@ -275,7 +263,7 @@ fun PrivacidadScreen(
             title = {
                 Text(
                     "Limpiar Historial",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -283,7 +271,7 @@ fun PrivacidadScreen(
                 Text(
                     "¿Estás seguro de que deseas eliminar todo tu historial de " +
                             "reproducción? Esta acción no se puede deshacer.",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             confirmButton = {
@@ -291,7 +279,6 @@ fun PrivacidadScreen(
                     onClick = {
                         showClearHistoryDialog = false
                         scope.launch {
-                            // Simular limpieza
                             kotlinx.coroutines.delay(500)
                             snackbarHostState.showSnackbar("Historial eliminado")
                         }
@@ -302,10 +289,10 @@ fun PrivacidadScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showClearHistoryDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -343,7 +330,7 @@ fun PrivacidadScreen(
                                 "• Historial de reproducción\n" +
                                 "• Listas y favoritos\n" +
                                 "• Preferencias guardadas",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             },
@@ -365,10 +352,10 @@ fun PrivacidadScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteAccountDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -380,7 +367,7 @@ fun PrivacidadScreen(
             title = {
                 Text(
                     "Sesiones Activas",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -393,7 +380,7 @@ fun PrivacidadScreen(
                         isCurrent = true
                     )
                     HorizontalDivider(
-                        color = Color.White.copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                     SessionItem(
@@ -405,7 +392,7 @@ fun PrivacidadScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showSessionsDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
@@ -420,7 +407,7 @@ fun PrivacidadScreen(
                     Text("Cerrar Todas", color = Color.Red)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -432,7 +419,7 @@ fun PrivacidadScreen(
             title = {
                 Text(
                     "Activar Modo Niños",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -441,7 +428,7 @@ fun PrivacidadScreen(
                     "El modo niños filtrará todo el contenido para mostrar solo " +
                             "películas y series apropiadas para menores. Se aplicará a " +
                             "todo el perfil.\n\n¿Deseas activarlo?",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             confirmButton = {
@@ -455,18 +442,29 @@ fun PrivacidadScreen(
                         }
                     }
                 ) {
-                    Text("Activar", color = Yellow, fontWeight = FontWeight.Bold)
+                    Text("Activar", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showControlParentalDialog = false }) {
-                    Text("Cancelar", color = Color.White)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
+}
+
+@Composable
+fun SectionHeaderPriv(title: String) {
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    )
 }
 
 @Composable
@@ -483,7 +481,7 @@ fun PrivacySwitchItem(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -495,7 +493,7 @@ fun PrivacySwitchItem(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Yellow,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -504,13 +502,13 @@ fun PrivacySwitchItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -519,8 +517,8 @@ fun PrivacySwitchItem(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Yellow,
-                    checkedTrackColor = Yellow.copy(alpha = 0.5f),
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                     uncheckedThumbColor = Color.Gray,
                     uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f)
                 )
@@ -546,7 +544,7 @@ fun PrivacyActionItem(
             containerColor = if (isDestructive)
                 Color.Red.copy(alpha = 0.1f)
             else
-                Color.White.copy(alpha = 0.05f)
+                MaterialTheme.colorScheme.surfaceVariant
         ),
         onClick = onClick
     ) {
@@ -559,7 +557,7 @@ fun PrivacyActionItem(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = if (isDestructive) Color.Red else Yellow,
+                tint = if (isDestructive) Color.Red else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -568,7 +566,7 @@ fun PrivacyActionItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = if (isDestructive) Color.Red else Color.White,
+                    color = if (isDestructive) Color.Red else MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -577,7 +575,7 @@ fun PrivacyActionItem(
                     color = if (isDestructive)
                         Color.Red.copy(alpha = 0.7f)
                     else
-                        Color.White.copy(alpha = 0.6f),
+                        MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -588,8 +586,57 @@ fun PrivacyActionItem(
                 tint = if (isDestructive)
                     Color.Red.copy(alpha = 0.5f)
                 else
-                    Color.White.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+fun InfoCardPriv(
+    icon: ImageVector,
+    title: String,
+    description: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = description,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                )
+            }
         }
     }
 }
@@ -610,7 +657,7 @@ fun SessionItem(
         Icon(
             imageVector = if (isCurrent) Icons.Filled.PhoneAndroid else Icons.Filled.Computer,
             contentDescription = device,
-            tint = if (isCurrent) Yellow else Color.White.copy(alpha = 0.7f),
+            tint = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
             modifier = Modifier.size(32.dp)
         )
 
@@ -620,19 +667,19 @@ fun SessionItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = device,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
                 if (isCurrent) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Surface(
-                        color = Yellow.copy(alpha = 0.3f),
+                        color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(4.dp)
                     ) {
                         Text(
                             "Actual",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -642,7 +689,7 @@ fun SessionItem(
             }
             Text(
                 text = "$location • $date",
-                color = Color.White.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontSize = 12.sp
             )
         }

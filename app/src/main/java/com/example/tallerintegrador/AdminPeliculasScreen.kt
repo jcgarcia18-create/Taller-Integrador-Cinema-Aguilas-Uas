@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/AdminPeliculasScreen.kt
 package com.example.tallerintegrador
 
 import androidx.compose.foundation.layout.*

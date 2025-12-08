@@ -6,26 +6,28 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import androidx.navigation.NavController
 
 @Composable
@@ -46,12 +48,12 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBlue)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Text(
             text = "Buscar Películas",
-            color = Yellow,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -62,12 +64,17 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Buscar por título, género...", color = Color.White.copy(alpha = 0.6f)) },
+            placeholder = {
+                Text(
+                    "Buscar por título, género...",
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Buscar",
-                    tint = Yellow
+                    tint = MaterialTheme.colorScheme.primary
                 )
             },
             trailingIcon = {
@@ -76,26 +83,24 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = "Limpiar",
-                            tint = Yellow
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             },
-            // --- CÓDIGO NUEVO Y CORRECTO ---
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedTextColor = Color.White,
-                focusedTextColor = Color.White,
-                cursorColor = Yellow,
-                focusedBorderColor = Yellow,
-                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                unfocusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                focusedPlaceholderColor = Color.White.copy(alpha = 0.6f),
-                unfocusedLeadingIconColor = Yellow,
-                focusedLeadingIconColor = Yellow,
-                unfocusedTrailingIconColor = Yellow,
-                focusedTrailingIconColor = Yellow,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
             ),
-
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -111,13 +116,13 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Buscar",
-                        tint = Yellow.copy(alpha = 0.5f),
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                         modifier = Modifier.size(80.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Busca tus películas favoritas",
-                        color = Color.White.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                         fontSize = 18.sp
                     )
                 }
@@ -129,14 +134,14 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
             ) {
                 Text(
                     text = "No se encontraron resultados",
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 18.sp
                 )
             }
         } else {
             Text(
                 text = "${peliculasFiltradas.size} resultado(s)",
-                color = Yellow,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
@@ -145,8 +150,7 @@ fun BusquedaScreen(viewModel: PeliculaViewModel, navController: NavController? =
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(peliculasFiltradas) { pelicula ->
-                    SearchResultItem(pelicula = pelicula,
-                    navController = navController)
+                    SearchResultItem(pelicula = pelicula, navController = navController)
                 }
             }
         }
@@ -158,10 +162,10 @@ fun SearchResultItem(pelicula: pelicula, navController: NavController?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { navController?.navigate("detalle_pelicula/${pelicula.id}")},
+            .clickable { navController?.navigate("detalle_pelicula/${pelicula.id}") },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -188,26 +192,26 @@ fun SearchResultItem(pelicula: pelicula, navController: NavController?) {
             ) {
                 Text(
                     text = pelicula.title,
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = pelicula.genre,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${pelicula.durationMinutes} min",
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = pelicula.description,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                     fontSize = 13.sp,
                     maxLines = 2
                 )

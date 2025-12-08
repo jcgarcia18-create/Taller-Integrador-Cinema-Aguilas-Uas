@@ -27,7 +27,7 @@ fun WelcomeScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Fondo con capa oscura
         Image(
-            painter = painterResource(id = R.drawable.login_background), // Corregido
+            painter = painterResource(id = R.drawable.login_background),
             contentDescription = "Background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -58,7 +58,7 @@ fun WelcomeScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
-                    onClick = { navController.navigate("register") }, // Acción añadida
+                    onClick = { navController.navigate("register") },
                     colors = ButtonDefaults.buttonColors(containerColor = Yellow)
                 ) {
                     Text("Registrarse", color = DarkBlue)
@@ -91,7 +91,7 @@ fun WelcomeScreen(navController: NavController) {
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(60.dp)) // Espacio ajustado
+                Spacer(modifier = Modifier.height(60.dp))
 
                 // Título movido al centro
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -110,7 +110,7 @@ fun WelcomeScreen(navController: NavController) {
                     )
                 }
 
-                Spacer(modifier = Modifier.height(60.dp)) // Espacio ajustado
+                Spacer(modifier = Modifier.height(60.dp))
 
                 // Botones de acción
                 Button(

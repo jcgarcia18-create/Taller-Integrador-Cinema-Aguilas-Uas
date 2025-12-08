@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/data/model/AdminResponses.kt
 package com.example.tallerintegrador.data.model
 
 import com.google.gson.annotations.SerializedName

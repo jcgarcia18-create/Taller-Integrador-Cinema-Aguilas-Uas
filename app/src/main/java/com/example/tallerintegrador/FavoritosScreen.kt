@@ -24,12 +24,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
-
-// ✅ CAMBIOS CLAVE EN FavoritosScreen.kt
-
 
 @Composable
 fun FavoritosScreen(
@@ -41,7 +36,6 @@ fun FavoritosScreen(
     val isLoading by favoritosViewModel.isLoading.collectAsState()
     val error by favoritosViewModel.error.collectAsState()
 
-    // ✅ CAMBIO: Solo carga si la lista está vacía
     LaunchedEffect(Unit) {
         if (favoritos.isEmpty()) {
             favoritosViewModel.cargarFavoritos()
@@ -51,27 +45,25 @@ fun FavoritosScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBlue)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when {
             isLoading && favoritos.isEmpty() -> {
-                // ✅ NUEVO: Indicador de carga
                 Column(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CircularProgressIndicator(color = Yellow)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Cargando favoritos...",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp
                     )
                 }
             }
 
             error != null -> {
-                // ✅ NUEVO: Manejo de errores
                 Column(
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -87,23 +79,28 @@ fun FavoritosScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Error al cargar favoritos",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = error ?: "Error desconocido",
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = { favoritosViewModel.cargarFavoritos() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
-                        Text("Reintentar", color = DarkBlue)
+                        Text(
+                            "Reintentar",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
             }
@@ -111,7 +108,7 @@ fun FavoritosScreen(
             favoritos.isEmpty() -> {
                 Text(
                     text = "Todavía no tienes películas favoritas",
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -152,7 +149,9 @@ private fun FavoritoItem(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkBlue.copy(alpha = 0.5f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -176,20 +175,20 @@ private fun FavoritoItem(
             ) {
                 Text(
                     text = pelicula.title,
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = pelicula.genre,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${pelicula.durationMinutes} min",
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     style = MaterialTheme.typography.bodySmall
                 )
             }

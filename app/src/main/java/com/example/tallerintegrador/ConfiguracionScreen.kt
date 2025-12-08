@@ -21,20 +21,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
+import com.example.tallerintegrador.ui.theme.LocalThemeManager
 import kotlinx.coroutines.launch
 
 /**
- * ✅ PANTALLA DE CONFIGURACIÓN FUNCIONAL
- *
- * Características implementadas:
- * - Gestión de caché
- * - Calidad de reproducción
- * - Notificaciones
- * - Autoplay
- * - Tema oscuro
- * - Idioma
+ * PANTALLA DE CONFIGURACIÓN CON CAMBIO DE TEMA INSTANTÁNEO
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +38,10 @@ fun ConfiguracionScreen(
     val prefs = remember { context.getSharedPreferences("app_settings", Context.MODE_PRIVATE) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // ACCESO AL THEME MANAGER
+    val themeManager = LocalThemeManager.current
+    val isDarkMode by themeManager.isDarkMode.collectAsState()
 
     // ===== ESTADOS DE CONFIGURACIÓN =====
     var notificacionesActivadas by remember {
@@ -73,13 +68,19 @@ fun ConfiguracionScreen(
     var showIdiomaDialog by remember { mutableStateOf(false) }
     var showClearCacheDialog by remember { mutableStateOf(false) }
 
+    // COLORES DINÁMICOS según el tema
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Configuración",
-                        color = Yellow,
+                        color = primaryColor,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -88,23 +89,50 @@ fun ConfiguracionScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = onBackgroundColor
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = surfaceColor
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = backgroundColor
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            // ===== SECCIÓN: APARIENCIA =====
+            item {
+                SectionHeader("Apariencia")
+            }
+
+            item {
+                SettingItemSwitch(
+                    icon = if (isDarkMode) Icons.Filled.DarkMode else Icons.Filled.LightMode,
+                    title = "Modo ${if (isDarkMode) "Oscuro" else "Claro"}",
+                    subtitle = if (isDarkMode)
+                        "Interfaz oscura activada"
+                    else
+                        "Interfaz clara activada",
+                    checked = isDarkMode,
+                    onCheckedChange = { newValue ->
+                        // CAMBIO INSTANTÁNEO
+                        themeManager.setDarkMode(newValue)
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                if (newValue) "Modo Oscuro activado"
+                                else "Modo Claro activado ☀️"
+                            )
+                        }
+                    }
+                )
+            }
+
             // ===== SECCIÓN: REPRODUCCIÓN =====
             item {
                 SectionHeader("Reproducción")
@@ -271,7 +299,13 @@ fun ConfiguracionScreen(
     if (showCalidadDialog) {
         AlertDialog(
             onDismissRequest = { showCalidadDialog = false },
-            title = { Text("Calidad de Video", color = Yellow, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Calidad de Video",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Column {
                     listOf("SD", "HD", "Full HD", "4K").forEach { calidad ->
@@ -292,22 +326,22 @@ fun ConfiguracionScreen(
                                     }
                                 },
                                 colors = RadioButtonDefaults.colors(
-                                    selectedColor = Yellow,
-                                    unselectedColor = Color.White.copy(alpha = 0.6f)
+                                    selectedColor = MaterialTheme.colorScheme.primary,
+                                    unselectedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                                 )
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(calidad, color = Color.White)
+                            Text(calidad, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showCalidadDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -316,7 +350,13 @@ fun ConfiguracionScreen(
     if (showIdiomaDialog) {
         AlertDialog(
             onDismissRequest = { showIdiomaDialog = false },
-            title = { Text("Seleccionar Idioma", color = Yellow, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Seleccionar Idioma",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Column {
                     listOf("Español", "English", "Français", "Português").forEach { lang ->
@@ -337,22 +377,22 @@ fun ConfiguracionScreen(
                                     }
                                 },
                                 colors = RadioButtonDefaults.colors(
-                                    selectedColor = Yellow,
-                                    unselectedColor = Color.White.copy(alpha = 0.6f)
+                                    selectedColor = MaterialTheme.colorScheme.primary,
+                                    unselectedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                                 )
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(lang, color = Color.White)
+                            Text(lang, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showIdiomaDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -361,12 +401,18 @@ fun ConfiguracionScreen(
     if (showClearCacheDialog) {
         AlertDialog(
             onDismissRequest = { showClearCacheDialog = false },
-            title = { Text("Limpiar Caché", color = Yellow, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Limpiar Caché",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Text(
                     "¿Estás seguro de que deseas eliminar todos los datos en caché? " +
                             "Esto liberará espacio pero las películas se cargarán más lento la próxima vez.",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             },
             confirmButton = {
@@ -374,7 +420,6 @@ fun ConfiguracionScreen(
                     onClick = {
                         showClearCacheDialog = false
                         scope.launch {
-                            // Limpiar cachés
                             peliculaViewModel?.clearCache()
                             favoritosViewModel?.clearCache()
                             snackbarHostState.showSnackbar("Caché eliminado exitosamente")
@@ -386,22 +431,22 @@ fun ConfiguracionScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showClearCacheDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
 }
 
-// ===== COMPONENTES AUXILIARES =====
+// ===== COMPONENTES AUXILIARES CON MATERIAL THEME =====
 
 @Composable
 fun SectionHeader(title: String) {
     Text(
         text = title,
-        color = Yellow,
+        color = MaterialTheme.colorScheme.primary,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
@@ -422,7 +467,7 @@ fun SettingItemSwitch(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -434,7 +479,7 @@ fun SettingItemSwitch(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Yellow,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -443,13 +488,13 @@ fun SettingItemSwitch(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -458,10 +503,8 @@ fun SettingItemSwitch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Yellow,
-                    checkedTrackColor = Yellow.copy(alpha = 0.5f),
-                    uncheckedThumbColor = Color.Gray,
-                    uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f)
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                 )
             )
         }
@@ -481,7 +524,7 @@ fun SettingItemWithDialog(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         onClick = onClick
     ) {
@@ -494,7 +537,7 @@ fun SettingItemWithDialog(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Yellow,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -503,13 +546,13 @@ fun SettingItemWithDialog(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
-                    color = Yellow.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -518,7 +561,7 @@ fun SettingItemWithDialog(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Cambiar",
-                tint = Color.White.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -538,7 +581,7 @@ fun SettingItemAction(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         onClick = onClick
     ) {
@@ -551,7 +594,7 @@ fun SettingItemAction(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = if (isDestructive) Color.Red else Yellow,
+                tint = if (isDestructive) Color.Red else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -560,13 +603,13 @@ fun SettingItemAction(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = if (isDestructive) Color.Red else Color.White,
+                    color = if (isDestructive) Color.Red else MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -586,7 +629,7 @@ fun SettingItemInfo(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -598,7 +641,7 @@ fun SettingItemInfo(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Yellow,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -607,13 +650,13 @@ fun SettingItemInfo(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }

@@ -4,7 +4,7 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 /**
- * ✅ DAO para el cache de películas
+ * DAO para el cache de películas
  */
 @Dao
 interface PeliculaCacheDao {
@@ -35,7 +35,7 @@ interface PeliculaCacheDao {
 }
 
 /**
- * ✅ DAO para el cache de favoritos
+ * DAO para el cache de favoritos
  */
 @Dao
 interface FavoritoCacheDao {

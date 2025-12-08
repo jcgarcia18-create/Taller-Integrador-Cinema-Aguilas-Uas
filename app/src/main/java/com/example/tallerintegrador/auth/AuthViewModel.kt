@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/auth/AuthViewModel.kt
 package com.example.tallerintegrador.auth
 
 import android.util.Log

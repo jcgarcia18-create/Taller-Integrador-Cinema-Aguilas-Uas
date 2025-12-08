@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/MainActivity.kt
 package com.example.tallerintegrador
 
 import android.os.Bundle
@@ -24,6 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            // El tema ahora es reactivo y se actualiza automáticamente
             TallerIntegradorTheme {
                 MainNavigation()
             }
@@ -34,9 +34,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
-
-    // ✅ HILT: Ya no necesitas ViewModelFactory
-    // Los ViewModels se obtienen automáticamente con hiltViewModel()
 
     NavHost(navController, startDestination = "welcome") {
 
@@ -149,6 +146,7 @@ fun MainNavigation() {
         composable("acerca_de") {
             AcercaDeScreen(navController = navController)
         }
+
         composable("admin/dashboard") {
             val authViewModel: AuthViewModel = hiltViewModel()
             val adminViewModel: AdminViewModel = hiltViewModel()
@@ -185,11 +183,10 @@ fun MainNavigation() {
                 adminViewModel = adminViewModel
             )
         }
-        // RUTA PARA CREAR (SIN PARÁMETROS)
+
         composable("admin/peliculas/nueva") {
             val adminViewModel: AdminViewModel = hiltViewModel()
 
-            // Asegurarse de que las películas estén cargadas
             LaunchedEffect(Unit) {
                 adminViewModel.cargarPeliculas()
             }
@@ -201,7 +198,6 @@ fun MainNavigation() {
             )
         }
 
-        // RUTA PARA EDITAR (CON ID)
         composable(
             route = "admin/peliculas/editar/{peliculaId}",
             arguments = listOf(
@@ -213,7 +209,6 @@ fun MainNavigation() {
             val peliculaId = backStackEntry.arguments?.getInt("peliculaId") ?: return@composable
             val adminViewModel: AdminViewModel = hiltViewModel()
 
-            // ✅ IMPORTANTE: Cargar películas antes de mostrar el formulario
             LaunchedEffect(Unit) {
                 adminViewModel.cargarPeliculas()
             }

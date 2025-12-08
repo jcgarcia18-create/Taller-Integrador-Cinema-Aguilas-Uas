@@ -21,17 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.navigation.NavController
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
 
 /**
- * ✅ PANTALLA DE NOTIFICACIONES FUNCIONAL
- *
- * Características:
- * - Gestión completa de preferencias de notificaciones
- * - Categorías personalizables
- * - Control de frecuencia y horarios
+ * ✅ PANTALLA DE NOTIFICACIONES CON SOPORTE DE TEMA
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +69,7 @@ fun NotificacionesScreen(navController: NavController?) {
                 title = {
                     Text(
                         "Notificaciones",
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -85,17 +78,17 @@ fun NotificacionesScreen(navController: NavController?) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -104,7 +97,7 @@ fun NotificacionesScreen(navController: NavController?) {
         ) {
             // ACTIVACIÓN GLOBAL
             item {
-                SectionHeader("Control General")
+                SectionHeaderNotif("Control General")
             }
 
             item {
@@ -129,7 +122,7 @@ fun NotificacionesScreen(navController: NavController?) {
 
             // CATEGORÍAS
             item {
-                SectionHeader("Categorías de Contenido")
+                SectionHeaderNotif("Categorías de Contenido")
             }
 
             item {
@@ -204,7 +197,7 @@ fun NotificacionesScreen(navController: NavController?) {
 
             // PREFERENCIAS
             item {
-                SectionHeader("Preferencias")
+                SectionHeaderNotif("Preferencias")
             }
 
             item {
@@ -257,7 +250,7 @@ fun NotificacionesScreen(navController: NavController?) {
 
             // INFORMACIÓN
             item {
-                SectionHeader("Información")
+                SectionHeaderNotif("Información")
             }
 
             item {
@@ -278,6 +271,17 @@ fun NotificacionesScreen(navController: NavController?) {
 }
 
 @Composable
+fun SectionHeaderNotif(title: String) {
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    )
+}
+
+@Composable
 fun NotificationSwitchItem(
     icon: ImageVector,
     title: String,
@@ -294,9 +298,9 @@ fun NotificationSwitchItem(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (prominent)
-                Yellow.copy(alpha = 0.1f)
+                MaterialTheme.colorScheme.primaryContainer
             else
-                Color.White.copy(alpha = 0.05f)
+                MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -308,7 +312,10 @@ fun NotificationSwitchItem(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = if (enabled) Yellow else Color.Gray,
+                tint = if (enabled)
+                    MaterialTheme.colorScheme.primary
+                else
+                    Color.Gray,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -317,14 +324,17 @@ fun NotificationSwitchItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    color = if (enabled) Color.White else Color.Gray,
+                    color = if (enabled)
+                        MaterialTheme.colorScheme.onSurface
+                    else
+                        Color.Gray,
                     fontSize = 16.sp,
                     fontWeight = if (prominent) FontWeight.Bold else FontWeight.Medium
                 )
                 Text(
                     text = subtitle,
                     color = if (enabled)
-                        Color.White.copy(alpha = 0.6f)
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     else
                         Color.Gray.copy(alpha = 0.4f),
                     fontSize = 13.sp
@@ -336,8 +346,8 @@ fun NotificationSwitchItem(
                 onCheckedChange = onCheckedChange,
                 enabled = enabled,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Yellow,
-                    checkedTrackColor = Yellow.copy(alpha = 0.5f),
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                     uncheckedThumbColor = Color.Gray,
                     uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f),
                     disabledCheckedThumbColor = Color.Gray,
@@ -360,7 +370,7 @@ fun InfoCard(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Yellow.copy(alpha = 0.15f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Row(
@@ -372,7 +382,7 @@ fun InfoCard(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Yellow,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
 
@@ -381,14 +391,14 @@ fun InfoCard(
             Column {
                 Text(
                     text = title,
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = description,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontSize = 14.sp,
                     lineHeight = 20.sp
                 )

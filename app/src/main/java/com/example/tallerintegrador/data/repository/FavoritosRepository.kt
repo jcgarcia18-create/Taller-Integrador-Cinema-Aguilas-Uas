@@ -41,7 +41,7 @@ class FavoritosRepository(
     }
 
     /**
-     * ✅ Elimina de favoritos (servidor + cache optimista)
+     * Elimina de favoritos (servidor + cache optimista)
      */
     suspend fun removeFavorito(token: String, peliculaId: Int) {
         // 1. Actualiza el cache inmediatamente (optimistic update)
@@ -58,21 +58,21 @@ class FavoritosRepository(
     }
 
     /**
-     * ✅ Verifica si es favorito desde el CACHE (sin red)
+     * Verifica si es favorito desde el CACHE (sin red)
      */
     suspend fun isFavorito(peliculaId: Int): Boolean {
         return cacheManager.isFavorito(peliculaId)
     }
 
     /**
-     * ✅ Flow reactivo de estado de favorito
+     * Flow reactivo de estado de favorito
      */
     fun isFavoritoFlow(peliculaId: Int): Flow<Boolean> {
         return cacheManager.isFavoritoFlow(peliculaId)
     }
 
     /**
-     * ✅ Flow reactivo de todos los IDs de favoritos
+     * Flow reactivo de todos los IDs de favoritos
      */
     fun getFavoritosIdsFlow(): Flow<Set<Int>> {
         return cacheManager.getFavoritosIdsFlow()

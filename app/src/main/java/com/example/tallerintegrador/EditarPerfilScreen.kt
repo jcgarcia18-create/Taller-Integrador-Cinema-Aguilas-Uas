@@ -26,20 +26,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tallerintegrador.auth.AuthViewModel
 import com.example.tallerintegrador.data.local.TokenManager
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
 
-/**
- * ✅ PANTALLA DE EDITAR PERFIL FUNCIONAL
- *
- * Características:
- * - Editar nombre de usuario
- * - Cambiar contraseña
- * - Seleccionar avatar
- * - Cambiar email
- * - Validaciones en tiempo real
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditarPerfilScreen(
@@ -51,7 +39,7 @@ fun EditarPerfilScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // ===== ESTADOS DE FORMULARIO =====
+    // Estados de formulario
     var nombre by remember { mutableStateOf(tokenManager.getUserName() ?: "") }
     var email by remember { mutableStateOf(tokenManager.getUserEmail() ?: "") }
     var passwordActual by remember { mutableStateOf("") }
@@ -71,7 +59,7 @@ fun EditarPerfilScreen(
     var showConfirmDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // ===== VALIDACIONES =====
+    // Validaciones
     val nombreError = remember(nombre) {
         when {
             nombre.isBlank() -> "El nombre no puede estar vacío"
@@ -108,7 +96,7 @@ fun EditarPerfilScreen(
                 title = {
                     Text(
                         "Editar Perfil",
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -117,7 +105,7 @@ fun EditarPerfilScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -128,18 +116,18 @@ fun EditarPerfilScreen(
                     ) {
                         Text(
                             "Guardar",
-                            color = if (isFormValid) Yellow else Color.Gray,
+                            color = if (isFormValid) MaterialTheme.colorScheme.primary else Color.Gray,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -149,7 +137,7 @@ fun EditarPerfilScreen(
         ) {
             item { Spacer(modifier = Modifier.height(24.dp)) }
 
-            // ===== AVATAR =====
+            // AVATAR
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -159,33 +147,36 @@ fun EditarPerfilScreen(
                         modifier = Modifier
                             .size(120.dp)
                             .clip(CircleShape)
-                            .background(Yellow)
-                            .border(4.dp, Yellow.copy(alpha = 0.3f), CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                4.dp,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                CircleShape
+                            )
                             .clickable { showAvatarDialog = true },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = getAvatarIcon(selectedAvatar),
                             contentDescription = "Avatar",
-                            tint = DarkBlue,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(70.dp)
                         )
 
-                        // Botón de editar
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(8.dp)
                                 .size(32.dp)
                                 .clip(CircleShape)
-                                .background(DarkBlue)
-                                .border(2.dp, Yellow, CircleShape),
+                                .background(MaterialTheme.colorScheme.surface)
+                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = "Cambiar avatar",
-                                tint = Yellow,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -195,7 +186,7 @@ fun EditarPerfilScreen(
 
                     Text(
                         "Toca para cambiar avatar",
-                        color = Color.White.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                         fontSize = 14.sp
                     )
                 }
@@ -203,11 +194,11 @@ fun EditarPerfilScreen(
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            // ===== INFORMACIÓN PERSONAL =====
+            // INFORMACIÓN PERSONAL
             item {
                 Text(
                     "Información Personal",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -220,9 +211,9 @@ fun EditarPerfilScreen(
                 OutlinedTextField(
                     value = nombre,
                     onValueChange = { nombre = it },
-                    label = { Text("Nombre de usuario", color = Yellow) },
+                    label = { Text("Nombre de usuario", color = MaterialTheme.colorScheme.primary) },
                     leadingIcon = {
-                        Icon(Icons.Filled.Person, "Nombre", tint = Yellow)
+                        Icon(Icons.Filled.Person, "Nombre", tint = MaterialTheme.colorScheme.primary)
                     },
                     isError = nombreError != null,
                     supportingText = {
@@ -232,14 +223,14 @@ fun EditarPerfilScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Yellow,
-                        focusedBorderColor = Yellow,
-                        unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                         errorBorderColor = Color.Red,
-                        focusedLabelColor = Yellow,
-                        unfocusedLabelColor = Yellow.copy(alpha = 0.7f)
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -252,9 +243,9 @@ fun EditarPerfilScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Correo electrónico", color = Yellow) },
+                    label = { Text("Correo electrónico", color = MaterialTheme.colorScheme.primary) },
                     leadingIcon = {
-                        Icon(Icons.Filled.Email, "Email", tint = Yellow)
+                        Icon(Icons.Filled.Email, "Email", tint = MaterialTheme.colorScheme.primary)
                     },
                     isError = emailError != null,
                     supportingText = {
@@ -264,14 +255,14 @@ fun EditarPerfilScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Yellow,
-                        focusedBorderColor = Yellow,
-                        unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                         errorBorderColor = Color.Red,
-                        focusedLabelColor = Yellow,
-                        unfocusedLabelColor = Yellow.copy(alpha = 0.7f)
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -279,7 +270,7 @@ fun EditarPerfilScreen(
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            // ===== CAMBIAR CONTRASEÑA =====
+            // CAMBIAR CONTRASEÑA
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -287,14 +278,14 @@ fun EditarPerfilScreen(
                 ) {
                     Text(
                         "Cambiar Contraseña",
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         "(Opcional)",
-                        color = Color.White.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         fontSize = 14.sp
                     )
                 }
@@ -307,9 +298,9 @@ fun EditarPerfilScreen(
                 OutlinedTextField(
                     value = passwordActual,
                     onValueChange = { passwordActual = it },
-                    label = { Text("Contraseña actual", color = Yellow) },
+                    label = { Text("Contraseña actual", color = MaterialTheme.colorScheme.primary) },
                     leadingIcon = {
-                        Icon(Icons.Filled.Lock, "Contraseña", tint = Yellow)
+                        Icon(Icons.Filled.Lock, "Contraseña", tint = MaterialTheme.colorScheme.primary)
                     },
                     trailingIcon = {
                         IconButton(onClick = { showPasswordActual = !showPasswordActual }) {
@@ -319,7 +310,7 @@ fun EditarPerfilScreen(
                                 else
                                     Icons.Filled.VisibilityOff,
                                 contentDescription = "Mostrar contraseña",
-                                tint = Yellow
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     },
@@ -329,13 +320,13 @@ fun EditarPerfilScreen(
                         PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Yellow,
-                        focusedBorderColor = Yellow,
-                        unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                        focusedLabelColor = Yellow,
-                        unfocusedLabelColor = Yellow.copy(alpha = 0.7f)
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -348,9 +339,9 @@ fun EditarPerfilScreen(
                 OutlinedTextField(
                     value = passwordNueva,
                     onValueChange = { passwordNueva = it },
-                    label = { Text("Nueva contraseña", color = Yellow) },
+                    label = { Text("Nueva contraseña", color = MaterialTheme.colorScheme.primary) },
                     leadingIcon = {
-                        Icon(Icons.Filled.LockOpen, "Nueva contraseña", tint = Yellow)
+                        Icon(Icons.Filled.LockOpen, "Nueva contraseña", tint = MaterialTheme.colorScheme.primary)
                     },
                     trailingIcon = {
                         IconButton(onClick = { showPasswordNueva = !showPasswordNueva }) {
@@ -360,7 +351,7 @@ fun EditarPerfilScreen(
                                 else
                                     Icons.Filled.VisibilityOff,
                                 contentDescription = "Mostrar contraseña",
-                                tint = Yellow
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     },
@@ -376,14 +367,14 @@ fun EditarPerfilScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Yellow,
-                        focusedBorderColor = Yellow,
-                        unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                         errorBorderColor = Color.Red,
-                        focusedLabelColor = Yellow,
-                        unfocusedLabelColor = Yellow.copy(alpha = 0.7f)
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -396,9 +387,9 @@ fun EditarPerfilScreen(
                 OutlinedTextField(
                     value = passwordConfirm,
                     onValueChange = { passwordConfirm = it },
-                    label = { Text("Confirmar contraseña", color = Yellow) },
+                    label = { Text("Confirmar contraseña", color = MaterialTheme.colorScheme.primary) },
                     leadingIcon = {
-                        Icon(Icons.Filled.CheckCircle, "Confirmar", tint = Yellow)
+                        Icon(Icons.Filled.CheckCircle, "Confirmar", tint = MaterialTheme.colorScheme.primary)
                     },
                     trailingIcon = {
                         IconButton(onClick = { showPasswordConfirm = !showPasswordConfirm }) {
@@ -408,7 +399,7 @@ fun EditarPerfilScreen(
                                 else
                                     Icons.Filled.VisibilityOff,
                                 contentDescription = "Mostrar contraseña",
-                                tint = Yellow
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     },
@@ -426,14 +417,14 @@ fun EditarPerfilScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Yellow,
-                        focusedBorderColor = Yellow,
-                        unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                         errorBorderColor = Color.Red,
-                        focusedLabelColor = Yellow,
-                        unfocusedLabelColor = Yellow.copy(alpha = 0.7f)
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -441,7 +432,7 @@ fun EditarPerfilScreen(
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            // ===== BOTÓN GUARDAR =====
+            // BOTÓN GUARDAR
             item {
                 Button(
                     onClick = { showConfirmDialog = true },
@@ -450,26 +441,26 @@ fun EditarPerfilScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Yellow,
+                        containerColor = MaterialTheme.colorScheme.primary,
                         disabledContainerColor = Color.Gray
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            color = DarkBlue,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Icon(
                             Icons.Filled.Save,
                             contentDescription = "Guardar",
-                            tint = DarkBlue
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             "Guardar Cambios",
-                            color = DarkBlue,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -481,14 +472,14 @@ fun EditarPerfilScreen(
         }
     }
 
-    // ===== DIÁLOGO DE SELECCIÓN DE AVATAR =====
+    // DIÁLOGO DE SELECCIÓN DE AVATAR
     if (showAvatarDialog) {
         AlertDialog(
             onDismissRequest = { showAvatarDialog = false },
             title = {
                 Text(
                     "Selecciona tu avatar",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -543,22 +534,22 @@ fun EditarPerfilScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showAvatarDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
 
-    // ===== DIÁLOGO DE CONFIRMACIÓN =====
+    // DIÁLOGO DE CONFIRMACIÓN
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
             title = {
                 Text(
                     "Confirmar cambios",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -566,28 +557,28 @@ fun EditarPerfilScreen(
                 Column {
                     Text(
                         "¿Deseas guardar los siguientes cambios?",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(12.dp))
 
                     if (nombre != tokenManager.getUserName()) {
                         Text(
                             "• Nombre: $nombre",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp
                         )
                     }
                     if (email != tokenManager.getUserEmail()) {
                         Text(
                             "• Email: $email",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp
                         )
                     }
                     if (passwordNueva.isNotEmpty()) {
                         Text(
                             "• Contraseña actualizada",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp
                         )
                     }
@@ -601,10 +592,8 @@ fun EditarPerfilScreen(
 
                         scope.launch {
                             try {
-                                // Simular guardado (aquí conectarías con tu API)
                                 kotlinx.coroutines.delay(1500)
 
-                                // Actualizar datos locales
                                 tokenManager.saveAuthData(
                                     token = tokenManager.getToken() ?: "",
                                     userId = tokenManager.getUserId(),
@@ -616,7 +605,6 @@ fun EditarPerfilScreen(
                                     "Perfil actualizado exitosamente"
                                 )
 
-                                // Volver a la pantalla anterior
                                 navController?.popBackStack()
 
                             } catch (e: Exception) {
@@ -629,21 +617,20 @@ fun EditarPerfilScreen(
                         }
                     }
                 ) {
-                    Text("Guardar", color = Yellow, fontWeight = FontWeight.Bold)
+                    Text("Guardar", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) {
-                    Text("Cancelar", color = Color.White)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
 }
 
-// ===== FUNCIÓN AUXILIAR: AVATARES =====
 @Composable
 fun getAvatarIcon(id: Int) = when(id) {
     0 -> Icons.Filled.Person
@@ -665,10 +652,18 @@ fun AvatarOption(
         modifier = Modifier
             .size(80.dp)
             .clip(CircleShape)
-            .background(if (isSelected) Yellow else Color.White.copy(alpha = 0.1f))
+            .background(
+                if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.surfaceVariant
+            )
             .border(
                 width = if (isSelected) 3.dp else 1.dp,
-                color = if (isSelected) Yellow else Color.White.copy(alpha = 0.3f),
+                color = if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
                 shape = CircleShape
             )
             .clickable { onClick() },
@@ -677,7 +672,10 @@ fun AvatarOption(
         Icon(
             imageVector = icon,
             contentDescription = "Avatar",
-            tint = if (isSelected) DarkBlue else Color.White,
+            tint = if (isSelected)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.size(40.dp)
         )
     }

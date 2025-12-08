@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/AdminDashboardScreen.kt
 package com.example.tallerintegrador
 
 import androidx.compose.animation.core.*

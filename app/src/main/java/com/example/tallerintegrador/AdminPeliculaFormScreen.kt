@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/AdminPeliculaFormScreen.kt
 package com.example.tallerintegrador
 
 import androidx.compose.foundation.layout.*
@@ -35,7 +34,7 @@ fun AdminPeliculaFormScreen(
     val isLoading by adminViewModel.isLoading.collectAsState()
     val error by adminViewModel.error.collectAsState()
 
-    // ✅ CRÍTICO: Buscar la película REACTIVAMENTE
+    // CRÍTICO: Buscar la película REACTIVAMENTE
     val peliculaExistente = remember(peliculas, peliculaId) {
         peliculaId?.let { id ->
             peliculas.find { it.id == id }
@@ -45,7 +44,7 @@ fun AdminPeliculaFormScreen(
     val esEdicion = peliculaExistente != null
     val titulo = if (esEdicion) "Editar Película" else "Agregar Película"
 
-    // ✅ Estados del formulario CON VALORES INICIALES
+    // Estados del formulario CON VALORES INICIALES
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var posterUrl by remember { mutableStateOf("") }
@@ -54,7 +53,7 @@ fun AdminPeliculaFormScreen(
     var genre by remember { mutableStateOf("") }
     var datosCarCargados by remember { mutableStateOf(false) }
 
-    // ✅ CARGAR DATOS DE LA PELÍCULA EXISTENTE
+    // CARGAR DATOS DE LA PELÍCULA EXISTENTE
     LaunchedEffect(peliculaExistente) {
         if (peliculaExistente != null && !datosCarCargados) {
             title = peliculaExistente.title
@@ -175,7 +174,7 @@ fun AdminPeliculaFormScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // ✅ MOSTRAR INDICADOR SI ESTÁ CARGANDO DATOS
+            // MOSTRAR INDICADOR SI ESTÁ CARGANDO DATOS
             if (peliculaId != null && peliculaExistente == null && !datosCarCargados) {
                 Column(
                     modifier = Modifier
@@ -198,7 +197,7 @@ fun AdminPeliculaFormScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // ✅ INDICADOR VISUAL DE MODO
+                    // INDICADOR VISUAL DE MODO
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -395,7 +394,7 @@ fun AdminPeliculaFormScreen(
                         )
                     }
 
-                    // ✅ PREVIEW DEL PÓSTER
+                    // PREVIEW DEL PÓSTER
                     if (posterUrl.isNotBlank() && posterUrl.startsWith("http")) {
                         item {
                             Card(
@@ -505,7 +504,7 @@ fun AdminPeliculaFormScreen(
                                                 genre = genre,
                                                 onSuccess = {
                                                     scope.launch {
-                                                        snackbarHostState.showSnackbar("✅ Película actualizada exitosamente")
+                                                        snackbarHostState.showSnackbar("Película actualizada exitosamente")
                                                         navController.popBackStack()
                                                     }
                                                 }
@@ -520,7 +519,7 @@ fun AdminPeliculaFormScreen(
                                                 genre = genre,
                                                 onSuccess = {
                                                     scope.launch {
-                                                        snackbarHostState.showSnackbar("✅ Película creada exitosamente")
+                                                        snackbarHostState.showSnackbar("Película creada exitosamente")
                                                         navController.popBackStack()
                                                     }
                                                 }

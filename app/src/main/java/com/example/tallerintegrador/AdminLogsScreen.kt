@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/AdminLogsScreen.kt
 package com.example.tallerintegrador
 
 import androidx.compose.animation.AnimatedVisibility

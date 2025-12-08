@@ -40,7 +40,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
         when (val state = authState) {
             is AuthState.Success -> {
                 // Navega a la pantalla principal y limpia el stack de navegación
-                navController.navigate("home") { // Asumimos que "home" es tu pantalla principal
+                navController.navigate("home") {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 }
             }
@@ -89,7 +89,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
                     label = { Text("Email", color = Yellow) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors( // Renombrado a OutlinedTextFieldDefaults.colors
+                    colors = OutlinedTextFieldDefaults.colors(
                         unfocusedTextColor = Yellow,
                         focusedTextColor = Yellow,
                         cursorColor = Yellow,
@@ -109,7 +109,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
-                    // --- CÓDIGO NUEVO Y CORRECTO ---
+                    // Colores personalizados
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedTextColor = Yellow,
                         focusedTextColor = Yellow,cursorColor = Yellow,

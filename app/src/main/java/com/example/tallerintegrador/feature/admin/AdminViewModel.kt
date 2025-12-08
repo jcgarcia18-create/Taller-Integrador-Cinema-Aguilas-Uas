@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/feature/admin/AdminViewModel.kt
 package com.example.tallerintegrador.feature.admin
 
 import androidx.lifecycle.ViewModel

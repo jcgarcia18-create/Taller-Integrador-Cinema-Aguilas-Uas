@@ -25,7 +25,7 @@ class FavoritosViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    // ✅ Flow reactivo de IDs (ya lo tienes)
+    // Flow reactivo de IDs (ya lo tienes)
     val favoritosIds: StateFlow<Set<Int>> = repository.getFavoritosIdsFlow()
         .stateIn(
             scope = viewModelScope,
@@ -33,7 +33,7 @@ class FavoritosViewModel @Inject constructor(
             initialValue = emptySet()
         )
 
-    // ✅ NUEVO: Auto-recargar cuando cambian los IDs
+    // Auto-recargar cuando cambian los IDs
     init {
         viewModelScope.launch {
             favoritosIds.collect { ids ->
@@ -53,7 +53,7 @@ class FavoritosViewModel @Inject constructor(
         }
     }
 
-    // ✅ NUEVO: Método interno privado
+    // Método interno privado
     private suspend fun cargarFavoritosInternamente() {
         val token = getTokenOrNull() ?: return
 
@@ -80,10 +80,6 @@ class FavoritosViewModel @Inject constructor(
                 } else {
                     repository.addFavorito(token, peliculaId)
                 }
-
-                // ✅ Ya no necesitas recargar manualmente
-                // El init {} detecta el cambio automáticamente
-
             } catch (e: Exception) {
                 _error.value = "Error al actualizar favorito: ${e.message}"
             }

@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/tallerintegrador/AdminUsuariosScreen.kt
 package com.example.tallerintegrador
 
 import androidx.compose.foundation.background

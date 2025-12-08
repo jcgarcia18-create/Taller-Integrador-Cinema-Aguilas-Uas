@@ -25,10 +25,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
-import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.auth.AuthViewModel
+import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.feature.admin.AdminViewModel
 
 @Composable
@@ -97,17 +95,22 @@ fun HomeScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CinemasAguilasUas", color = Yellow) },
+                title = {
+                    Text(
+                        "CinemasAguilasUas",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue,
-                    titleContentColor = Yellow,
-                    actionIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 actions = {
                     TextButton(onClick = {
                         onTabSelected(4)
                     }) {
-                        Text("Mi perfil", color = Yellow)
+                        Text("Mi perfil", color = MaterialTheme.colorScheme.primary)
                     }
                     TextButton(onClick = {
                         authViewModel?.logout()
@@ -117,7 +120,7 @@ fun HomeScreenContent(
                             popUpTo(0) { inclusive = true }
                         }
                     }) {
-                        Text("Cerrar sesión", color = Color.White)
+                        Text("Cerrar sesión", color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             )
@@ -128,7 +131,7 @@ fun HomeScreenContent(
                 onTabSelected = onTabSelected
             )
         },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         when (selectedTab) {
             0 -> {
@@ -139,7 +142,7 @@ fun HomeScreenContent(
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(color = Yellow)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 } else {
                     LazyColumn(modifier = Modifier.padding(padding)) {
@@ -147,7 +150,7 @@ fun HomeScreenContent(
                             item {
                                 Text(
                                     text = genero,
-                                    color = Yellow,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
@@ -217,14 +220,15 @@ fun HomeScreenContent(
         }
     }
 }
+
 @Composable
 fun BottomNavigationBar(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit
 ) {
     NavigationBar(
-        containerColor = DarkBlue,
-        contentColor = Yellow,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
         tonalElevation = 8.dp
     ) {
         NavigationBarItem(
@@ -233,11 +237,11 @@ fun BottomNavigationBar(
             selected = selectedTab == 0,
             onClick = { onTabSelected(0) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Yellow,
-                unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                selectedTextColor = Yellow,
-                unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                indicatorColor = DarkBlue.copy(alpha = 0.2f)
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
         NavigationBarItem(
@@ -246,11 +250,11 @@ fun BottomNavigationBar(
             selected = selectedTab == 1,
             onClick = { onTabSelected(1) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Yellow,
-                unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                selectedTextColor = Yellow,
-                unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                indicatorColor = DarkBlue.copy(alpha = 0.2f)
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
         NavigationBarItem(
@@ -259,11 +263,11 @@ fun BottomNavigationBar(
             selected = selectedTab == 2,
             onClick = { onTabSelected(2) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Yellow,
-                unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                selectedTextColor = Yellow,
-                unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                indicatorColor = DarkBlue.copy(alpha = 0.2f)
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
         NavigationBarItem(
@@ -272,11 +276,11 @@ fun BottomNavigationBar(
             selected = selectedTab == 3,
             onClick = { onTabSelected(3) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Yellow,
-                unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                selectedTextColor = Yellow,
-                unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                indicatorColor = DarkBlue.copy(alpha = 0.2f)
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
         NavigationBarItem(
@@ -285,11 +289,11 @@ fun BottomNavigationBar(
             selected = selectedTab == 4,
             onClick = { onTabSelected(4) },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Yellow,
-                unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                selectedTextColor = Yellow,
-                unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                indicatorColor = DarkBlue.copy(alpha = 0.2f)
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
     }
@@ -317,10 +321,10 @@ fun MovieCard(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = pelicula.title ?: "",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,

@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.example.tallerintegrador.data.model.pelicula
 
 /**
- * ✅ Entidad de caché para películas
+ * Entidad de caché para películas
  * Almacena las películas localmente para evitar requests innecesarias
  */
 @Entity(tableName = "peliculas_cache")
@@ -24,7 +24,7 @@ data class PeliculaCacheEntity(
 )
 
 /**
- * ✅ Entidad de caché para favoritos
+ * Entidad de caché para favoritos
  * Almacena los IDs de películas favoritas
  */
 @Entity(tableName = "favoritos_cache")

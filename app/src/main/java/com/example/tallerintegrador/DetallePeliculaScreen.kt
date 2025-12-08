@@ -23,18 +23,10 @@ import coil.compose.AsyncImage
 import com.example.tallerintegrador.feature.favoritos.FavoritosViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaViewModel
 import com.example.tallerintegrador.feature.peliculas.PeliculaDetailState
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import androidx.compose.ui.layout.ContentScale
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
-
-/**
- * ✅ ACTUALIZADO: Ahora recibe FavoritosViewModel como parámetro
- * Ya no crea una nueva instancia internamente
- */
-// ✅ CAMBIOS CLAVE EN DetallePeliculaScreen.kt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,16 +39,14 @@ fun DetallePeliculaScreen(
     val context = LocalContext.current
     val peliculaDetailState by viewModel.peliculaDetail.collectAsState()
 
-    // ✅ CAMBIO: Usa Flow reactivo en lugar de suspend function
+    // Flow reactivo
     val isFavorite by favoritosViewModel.esFavoritoFlow(peliculaId)
         .collectAsState(initial = false)
 
-    // Carga automática de la película
     LaunchedEffect(peliculaId) {
         viewModel.getPeliculaByIdWithFallback(peliculaId)
     }
 
-    // Limpieza cuando se sale
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearPeliculaDetail()
@@ -69,8 +59,8 @@ fun DetallePeliculaScreen(
                 title = { },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    actionIconContentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -82,7 +72,7 @@ fun DetallePeliculaScreen(
                 }
             )
         },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         when (val state = peliculaDetailState) {
             is PeliculaDetailState.Idle -> {
@@ -100,11 +90,11 @@ fun DetallePeliculaScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        CircularProgressIndicator(color = Yellow)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Cargando detalles...",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 16.sp
                         )
                     }
@@ -131,22 +121,24 @@ fun DetallePeliculaScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Error al cargar la película",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = state.message,
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
                             onClick = { viewModel.getPeliculaById(peliculaId, forceRefresh = true) },
-                            colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
                         ) {
-                            Text("Reintentar", color = DarkBlue)
+                            Text("Reintentar", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
@@ -195,7 +187,7 @@ fun DetallePeliculaScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
-                                    color = Yellow,
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(50.dp)
                                 )
                             }
@@ -217,7 +209,7 @@ fun DetallePeliculaScreen(
                             }
                         }
 
-                        // Gradiente
+                        // Gradiente adaptativo según el tema
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -225,8 +217,8 @@ fun DetallePeliculaScreen(
                                     Brush.verticalGradient(
                                         colors = listOf(
                                             Color.Transparent,
-                                            DarkBlue.copy(alpha = 0.7f),
-                                            DarkBlue
+                                            MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
+                                            MaterialTheme.colorScheme.background
                                         ),
                                         startY = 200f
                                     )
@@ -240,21 +232,20 @@ fun DetallePeliculaScreen(
                                 .padding(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // ✅ CAMBIO: El botón se actualiza automáticamente con el Flow
                             IconButton(
                                 onClick = {
                                     favoritosViewModel.toggleFavorito(pelicula.id, isFavorite)
                                 },
                                 modifier = Modifier
                                     .background(
-                                        color = DarkBlue.copy(alpha = 0.7f),
+                                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(50)
                                     )
                             ) {
                                 Icon(
                                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                                     contentDescription = "Favorito",
-                                    tint = if (isFavorite) Color.Red else Color.White
+                                    tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
                                 )
                             }
 
@@ -262,14 +253,14 @@ fun DetallePeliculaScreen(
                                 onClick = { /* Compartir */ },
                                 modifier = Modifier
                                     .background(
-                                        color = DarkBlue.copy(alpha = 0.7f),
+                                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                                         shape = RoundedCornerShape(50)
                                     )
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Share,
                                     contentDescription = "Compartir",
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -283,7 +274,7 @@ fun DetallePeliculaScreen(
                     ) {
                         Text(
                             text = pelicula.title,
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -302,7 +293,7 @@ fun DetallePeliculaScreen(
 
                         Text(
                             text = "Sinopsis",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -311,7 +302,7 @@ fun DetallePeliculaScreen(
 
                         Text(
                             text = pelicula.description,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 16.sp,
                             lineHeight = 24.sp
                         )
@@ -326,7 +317,7 @@ fun DetallePeliculaScreen(
 
                             Text(
                                 text = "Tráiler",
-                                color = Yellow,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -342,7 +333,9 @@ fun DetallePeliculaScreen(
                                         Log.e("DetallePelicula", "Error abriendo URL: ${e.message}")
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
@@ -351,12 +344,12 @@ fun DetallePeliculaScreen(
                                 Icon(
                                     imageVector = Icons.Filled.PlayArrow,
                                     contentDescription = "Ver tráiler",
-                                    tint = DarkBlue
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Ver tráiler",
-                                    color = DarkBlue,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -368,7 +361,9 @@ fun DetallePeliculaScreen(
                         // Botón de reproducir
                         Button(
                             onClick = { /* Reproducir película */ },
-                            colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
@@ -377,13 +372,13 @@ fun DetallePeliculaScreen(
                             Icon(
                                 imageVector = Icons.Filled.PlayArrow,
                                 contentDescription = "Reproducir",
-                                tint = DarkBlue,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(28.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 "Reproducir película",
-                                color = DarkBlue,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -400,12 +395,12 @@ fun DetallePeliculaScreen(
 @Composable
 fun InfoChip(text: String) {
     Surface(
-        color = Yellow.copy(alpha = 0.2f),
+        color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
             text = text,
-            color = Yellow,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)

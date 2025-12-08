@@ -20,7 +20,7 @@ interface ApiService {
     @GET("api/peliculas")
     suspend fun getPeliculas(): List<pelicula>
 
-    // ✅ NUEVO: Obtener una película específica por ID
+    // Obtener una película específica por ID
     @GET("api/peliculas/{id}")
     suspend fun getPeliculaById(@Path("id") peliculaId: Int): pelicula
 
