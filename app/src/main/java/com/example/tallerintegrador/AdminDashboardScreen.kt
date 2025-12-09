@@ -26,9 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tallerintegrador.feature.admin.AdminViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,20 +60,20 @@ fun AdminDashboardScreen(
                         Icon(
                             imageVector = Icons.Filled.Shield,
                             contentDescription = "Admin",
-                            tint = Yellow,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(28.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
                                 "Panel de Administración",
-                                color = Yellow,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )
                             Text(
                                 "Cinema Águilas UAS",
-                                color = Color.White.copy(alpha = 0.7f),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp
                             )
                         }
@@ -87,7 +84,7 @@ fun AdminDashboardScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -96,16 +93,16 @@ fun AdminDashboardScreen(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Actualizar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -200,7 +197,7 @@ fun AdminDashboardScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp),
                                     colors = CardDefaults.cardColors(
-                                        containerColor = Color.White.copy(alpha = 0.05f)
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                                     )
                                 ) {
                                     Column(
@@ -208,7 +205,7 @@ fun AdminDashboardScreen(
                                     ) {
                                         Text(
                                             "Información Destacada",
-                                            color = Yellow,
+                                            color = MaterialTheme.colorScheme.primary,
                                             fontSize = 16.sp,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -301,12 +298,7 @@ fun WelcomeCard() {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Brush.horizontalGradient(
-                colors = listOf(
-                    Color(0xFF1E88E5),
-                    Color(0xFF9C27B0)
-                )
-            ).let { Color.Transparent }
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Box(
@@ -315,8 +307,8 @@ fun WelcomeCard() {
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF1E88E5).copy(alpha = 0.3f),
-                            Color(0xFF9C27B0).copy(alpha = 0.3f)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
                         )
                     )
                 )
@@ -328,7 +320,7 @@ fun WelcomeCard() {
                 Icon(
                     imageVector = Icons.Filled.Dashboard,
                     contentDescription = "Dashboard",
-                    tint = Yellow,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(48.dp)
                 )
 
@@ -337,13 +329,13 @@ fun WelcomeCard() {
                 Column {
                     Text(
                         "Bienvenido al Dashboard",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         "Gestiona todo desde aquí",
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                         fontSize = 14.sp
                     )
                 }
@@ -400,14 +392,14 @@ fun AnimatedStatsCard(
 
             Text(
                 text = valueText ?: animatedValue.toString(),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = label,
-                color = Color.White.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp
             )
         }
@@ -437,12 +429,12 @@ fun InfoRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                color = Color.White.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp
             )
             Text(
                 text = value,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -454,7 +446,7 @@ fun InfoRow(
 fun SectionTitle(title: String) {
     Text(
         text = title,
-        color = Yellow,
+        color = MaterialTheme.colorScheme.primary,
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold
     )
@@ -466,14 +458,14 @@ fun AdminActionCard(
     title: String,
     description: String,
     badge: String? = null,
-    badgeColor: Color = Yellow,
+    badgeColor: Color = Color(0xFFFFE600),
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         onClick = onClick
     ) {
@@ -487,7 +479,7 @@ fun AdminActionCard(
                 modifier = Modifier
                     .size(56.dp)
                     .background(
-                        color = Yellow.copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(12.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -495,7 +487,7 @@ fun AdminActionCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = Yellow,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -506,7 +498,7 @@ fun AdminActionCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -530,7 +522,7 @@ fun AdminActionCard(
 
                 Text(
                     text = description,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -538,7 +530,7 @@ fun AdminActionCard(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Ir",
-                tint = Color.White.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -564,7 +556,7 @@ fun LoadingDashboard() {
         Icon(
             imageVector = Icons.Filled.Refresh,
             contentDescription = "Cargando",
-            tint = Yellow,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(64.dp)
                 .rotate(rotation)
@@ -574,7 +566,7 @@ fun LoadingDashboard() {
 
         Text(
             "Cargando dashboard...",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp
         )
     }
@@ -595,7 +587,7 @@ fun ErrorDashboard(
         Icon(
             imageVector = Icons.Filled.ErrorOutline,
             contentDescription = "Error",
-            tint = Color.Red,
+            tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(64.dp)
         )
 
@@ -603,7 +595,7 @@ fun ErrorDashboard(
 
         Text(
             "Error al cargar dashboard",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
@@ -612,7 +604,7 @@ fun ErrorDashboard(
 
         Text(
             error,
-            color = Color.White.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             fontSize = 14.sp
         )
 
@@ -620,11 +612,20 @@ fun ErrorDashboard(
 
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
         ) {
-            Icon(Icons.Filled.Refresh, contentDescription = null, tint = DarkBlue)
+            Icon(
+                Icons.Filled.Refresh,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Reintentar", color = DarkBlue)
+            Text(
+                "Reintentar",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }

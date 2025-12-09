@@ -30,8 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tallerintegrador.feature.admin.AdminViewModel
 import com.example.tallerintegrador.feature.admin.LogActividad
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,12 +84,12 @@ fun AdminLogsScreen(
                     Column {
                         Text(
                             "Logs de Actividad",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             "${logs.size} registros",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -101,19 +99,22 @@ fun AdminLogsScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showFilterDialog = true }) {
                         Badge(
-                            containerColor = if (selectedFilter != null) Color.Red else Color.Transparent
+                            containerColor = if (selectedFilter != null)
+                                MaterialTheme.colorScheme.error
+                            else
+                                Color.Transparent
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
                                 contentDescription = "Filtros",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -121,23 +122,23 @@ fun AdminLogsScreen(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Actualizar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = { /* TODO: Exportar logs */ }) {
                         Icon(
                             imageVector = Icons.Filled.Download,
                             contentDescription = "Exportar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -147,7 +148,7 @@ fun AdminLogsScreen(
             when {
                 isLoading && logs.isEmpty() -> {
                     CircularProgressIndicator(
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -166,24 +167,24 @@ fun AdminLogsScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp),
                             placeholder = {
-                                Text("Buscar en logs...", color = Color.White.copy(alpha = 0.5f))
+                                Text("Buscar en logs...", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                             },
                             leadingIcon = {
-                                Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = Yellow)
+                                Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = MaterialTheme.colorScheme.primary)
                             },
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Filled.Close, contentDescription = "Limpiar", tint = Yellow)
+                                        Icon(Icons.Filled.Close, contentDescription = "Limpiar", tint = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                             ),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true
@@ -207,10 +208,10 @@ fun AdminLogsScreen(
                                         Icon(Icons.Filled.Close, null, modifier = Modifier.size(18.dp))
                                     },
                                     colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = Yellow.copy(alpha = 0.2f),
-                                        labelColor = Yellow,
-                                        leadingIconContentColor = Yellow,
-                                        trailingIconContentColor = Yellow
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        labelColor = MaterialTheme.colorScheme.primary,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.primary,
+                                        trailingIconContentColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                             }
@@ -235,13 +236,13 @@ fun AdminLogsScreen(
                                     Icon(
                                         Icons.Filled.SearchOff,
                                         contentDescription = null,
-                                        tint = Color.White.copy(alpha = 0.3f),
+                                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                     Text(
                                         "No se encontraron logs",
-                                        color = Color.White.copy(alpha = 0.6f),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                         fontSize = 16.sp
                                     )
                                     if (selectedFilter != null || searchQuery.isNotEmpty()) {
@@ -252,7 +253,7 @@ fun AdminLogsScreen(
                                                 selectedFilter = null
                                             }
                                         ) {
-                                            Text("Limpiar filtros", color = Yellow)
+                                            Text("Limpiar filtros", color = MaterialTheme.colorScheme.primary)
                                         }
                                     }
                                 }
@@ -281,7 +282,7 @@ fun AdminLogsScreen(
             title = {
                 Text(
                     "Filtrar Logs",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -296,8 +297,8 @@ fun AdminLogsScreen(
                             },
                             label = { Text("Todos los logs") },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Yellow.copy(alpha = 0.3f),
-                                selectedLabelColor = Yellow
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -328,9 +329,9 @@ fun AdminLogsScreen(
                                 }
                             },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Yellow.copy(alpha = 0.3f),
-                                selectedLabelColor = Yellow,
-                                labelColor = Color.White
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.primary,
+                                labelColor = MaterialTheme.colorScheme.onSurface
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -341,10 +342,10 @@ fun AdminLogsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showFilterDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -359,7 +360,7 @@ fun LogsStatsCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Yellow.copy(alpha = 0.15f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Row(
@@ -372,13 +373,13 @@ fun LogsStatsCard(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         value.toString(),
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         label,
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 12.sp
                     )
                 }
@@ -398,7 +399,7 @@ fun LogCard(log: LogActividad) {
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -428,7 +429,7 @@ fun LogCard(log: LogActividad) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = log.usuarioNombre,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -443,7 +444,7 @@ fun LogCard(log: LogActividad) {
                         if (log.detalles.isNotEmpty()) {
                             Text(
                                 text = " • ${log.detalles.take(20)}${if (log.detalles.length > 20) "..." else ""}",
-                                color = Color.White.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 13.sp
                             )
                         }
@@ -453,13 +454,13 @@ fun LogCard(log: LogActividad) {
                         Icon(
                             imageVector = Icons.Filled.Schedule,
                             contentDescription = "Tiempo",
-                            tint = Color.White.copy(alpha = 0.5f),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = log.timestamp,
-                            color = Color.White.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -469,7 +470,7 @@ fun LogCard(log: LogActividad) {
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = if (expanded) "Contraer" else "Expandir",
-                    tint = Color.White.copy(alpha = 0.5f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -485,7 +486,7 @@ fun LogCard(log: LogActividad) {
                         .padding(top = 12.dp)
                 ) {
                     HorizontalDivider(
-                        color = Color.White.copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
@@ -511,14 +512,14 @@ fun LogDetailRow(label: String, value: String) {
     ) {
         Text(
             text = "$label:",
-            color = Yellow,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.width(120.dp)
         )
         Text(
             text = value,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 12.sp,
             modifier = Modifier.weight(1f)
         )
@@ -534,13 +535,13 @@ fun EmptyLogsState(modifier: Modifier = Modifier) {
         Icon(
             Icons.AutoMirrored.Filled.Article,
             contentDescription = null,
-            tint = Color.White.copy(alpha = 0.3f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             "No hay actividad registrada",
-            color = Color.White.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontSize = 16.sp
         )
     }

@@ -25,8 +25,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.tallerintegrador.data.model.pelicula
 import com.example.tallerintegrador.feature.admin.AdminViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,12 +84,12 @@ fun AdminPeliculasScreen(
                     Column {
                         Text(
                             "Gestionar Películas",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             "${peliculas.size} en catálogo",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -101,19 +99,22 @@ fun AdminPeliculasScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showFilterDialog = true }) {
                         Badge(
-                            containerColor = if (selectedGenero != null) Color.Red else Color.Transparent
+                            containerColor = if (selectedGenero != null)
+                                MaterialTheme.colorScheme.error
+                            else
+                                Color.Transparent
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
                                 contentDescription = "Filtros",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -121,7 +122,7 @@ fun AdminPeliculasScreen(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Actualizar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = {
@@ -130,17 +131,17 @@ fun AdminPeliculasScreen(
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = "Agregar película",
-                            tint = Yellow
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -150,7 +151,7 @@ fun AdminPeliculasScreen(
             when {
                 isLoading && peliculas.isEmpty() -> {
                     CircularProgressIndicator(
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -169,24 +170,35 @@ fun AdminPeliculasScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp),
                             placeholder = {
-                                Text("Buscar películas...", color = Color.White.copy(alpha = 0.5f))
+                                Text(
+                                    "Buscar películas...",
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                )
                             },
                             leadingIcon = {
-                                Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = Yellow)
+                                Icon(
+                                    Icons.Filled.Search,
+                                    contentDescription = "Buscar",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
                             },
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Filled.Close, contentDescription = "Limpiar", tint = Yellow)
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            contentDescription = "Limpiar",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
                                     }
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                             ),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true
@@ -204,16 +216,24 @@ fun AdminPeliculasScreen(
                                     onClick = { selectedGenero = null },
                                     label = { Text("Género: $selectedGenero") },
                                     leadingIcon = {
-                                        Icon(Icons.Filled.FilterList, null, modifier = Modifier.size(18.dp))
+                                        Icon(
+                                            Icons.Filled.FilterList,
+                                            null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
                                     },
                                     trailingIcon = {
-                                        Icon(Icons.Filled.Close, null, modifier = Modifier.size(18.dp))
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
                                     },
                                     colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = Yellow.copy(alpha = 0.2f),
-                                        labelColor = Yellow,
-                                        leadingIconContentColor = Yellow,
-                                        trailingIconContentColor = Yellow
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        labelColor = MaterialTheme.colorScheme.primary,
+                                        leadingIconContentColor = MaterialTheme.colorScheme.primary,
+                                        trailingIconContentColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                             }
@@ -239,13 +259,13 @@ fun AdminPeliculasScreen(
                                     Icon(
                                         Icons.Filled.SearchOff,
                                         contentDescription = null,
-                                        tint = Color.White.copy(alpha = 0.3f),
+                                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                     Text(
                                         "No se encontraron películas",
-                                        color = Color.White.copy(alpha = 0.6f),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                         fontSize = 16.sp
                                     )
                                     if (selectedGenero != null || searchQuery.isNotEmpty()) {
@@ -256,7 +276,10 @@ fun AdminPeliculasScreen(
                                                 selectedGenero = null
                                             }
                                         ) {
-                                            Text("Limpiar filtros", color = Yellow)
+                                            Text(
+                                                "Limpiar filtros",
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
                                         }
                                     }
                                 }
@@ -299,7 +322,7 @@ fun AdminPeliculasScreen(
             title = {
                 Text(
                     "Filtrar por Género",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -314,8 +337,8 @@ fun AdminPeliculasScreen(
                             },
                             label = { Text("Todos los géneros") },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Yellow.copy(alpha = 0.3f),
-                                selectedLabelColor = Yellow
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -333,9 +356,9 @@ fun AdminPeliculasScreen(
                             },
                             label = { Text(genero) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Yellow.copy(alpha = 0.3f),
-                                selectedLabelColor = Yellow,
-                                labelColor = Color.White
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.primary,
+                                labelColor = MaterialTheme.colorScheme.onSurface
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -346,10 +369,10 @@ fun AdminPeliculasScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showFilterDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -361,7 +384,7 @@ fun AdminPeliculasScreen(
             title = {
                 Text(
                     selectedPelicula?.title ?: "",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -385,10 +408,10 @@ fun AdminPeliculasScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showDetailsDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -401,14 +424,14 @@ fun AdminPeliculasScreen(
                 Icon(
                     Icons.Filled.Warning,
                     contentDescription = "Advertencia",
-                    tint = Color.Red,
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(48.dp)
                 )
             },
             title = {
                 Text(
                     "Eliminar Película",
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -416,20 +439,33 @@ fun AdminPeliculasScreen(
                 Column {
                     Text(
                         "¿Estás seguro de eliminar \"${selectedPelicula?.title}\"?",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         "Esta acción:",
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("• Eliminará la película del catálogo", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                        Text("• La quitará de todos los favoritos", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                        Text("• No se puede deshacer", color = Color.Red, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "• Eliminará la película del catálogo",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            "• La quitará de todos los favoritos",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            "• No se puede deshacer",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             },
@@ -445,17 +481,19 @@ fun AdminPeliculasScreen(
                         showDeleteDialog = false
                         selectedPelicula = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
                 ) {
                     Text("Eliminar", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -471,7 +509,7 @@ fun MovieStatsBar(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -481,17 +519,45 @@ fun MovieStatsBar(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Filled.Movie, null, tint = Yellow, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Filled.Movie,
+                    null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(total.toString(), color = Yellow, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text("Total", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+                Text(
+                    total.toString(),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "Total",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp
+                )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Filled.Visibility, null, tint = Color(0xFF2196F3), modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Filled.Visibility,
+                    null,
+                    tint = Color(0xFF2196F3),
+                    modifier = Modifier.size(20.dp)
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(filtradas.toString(), color = Color(0xFF2196F3), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text("Mostrando", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+                Text(
+                    filtradas.toString(),
+                    color = Color(0xFF2196F3),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "Mostrando",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp
+                )
             }
         }
     }
@@ -508,7 +574,7 @@ fun AdminPeliculaCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column {
@@ -531,7 +597,7 @@ fun AdminPeliculaCard(
             ) {
                 Text(
                     text = pelicula.title,
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -540,7 +606,7 @@ fun AdminPeliculaCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = pelicula.genre,
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -568,7 +634,7 @@ fun AdminPeliculaCard(
                         Icon(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = "Editar",
-                            tint = Yellow,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -579,7 +645,7 @@ fun AdminPeliculaCard(
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Eliminar",
-                            tint = Color.Red,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -592,8 +658,17 @@ fun AdminPeliculaCard(
 @Composable
 fun MovieDetailRow(label: String, value: String) {
     Column(modifier = Modifier.padding(vertical = 2.dp)) {
-        Text(label, color = Yellow, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        Text(value, color = Color.White, fontSize = 13.sp)
+        Text(
+            label,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            value,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 13.sp
+        )
     }
 }
 
@@ -606,13 +681,13 @@ fun EmptyMoviesState(modifier: Modifier = Modifier) {
         Icon(
             Icons.Filled.Movie,
             contentDescription = null,
-            tint = Color.White.copy(alpha = 0.3f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             "No hay películas en el catálogo",
-            color = Color.White.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontSize = 16.sp
         )
     }

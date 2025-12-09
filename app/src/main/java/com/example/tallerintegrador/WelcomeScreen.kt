@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -17,51 +18,72 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.tallerintegrador.ui.theme.DarkBlue
 import com.example.tallerintegrador.ui.theme.TallerIntegradorTheme
-import com.example.tallerintegrador.ui.theme.Yellow
-
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Fondo con capa oscura
+        // Fondo con imagen
         Image(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = "Background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+
+        // Capa oscura ADAPTATIVA según el tema
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.6f))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.7f),
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
+                            MaterialTheme.colorScheme.background
+                        )
+                    )
+                )
         )
 
         // Contenido de la pantalla
         Column(
-            modifier = Modifier.fillMaxSize().statusBarsPadding()
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
         ) {
-            // TopBar - solo con botones a la dercha
+            // TopBar - solo con botones a la derecha
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(25.dp),
-                horizontalArrangement = Arrangement.End, // Alineado a la derecha
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = { navController.navigate("login") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
-                    Text("Iniciar sesión", color = DarkBlue)
+                    Text(
+                        "Iniciar sesión",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = { navController.navigate("register") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
-                    Text("Registrarse", color = DarkBlue)
+                    Text(
+                        "Registrarse",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
@@ -76,7 +98,7 @@ fun WelcomeScreen(navController: NavController) {
             ) {
                 Text(
                     text = "Tu cine en casa, fácil y rápido",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
                     textAlign = TextAlign.Center,
@@ -85,7 +107,7 @@ fun WelcomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Disfruta de tus películas y series favoritas en cualquier dispositivo",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
                     fontWeight = FontWeight.Normal,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,
@@ -97,14 +119,14 @@ fun WelcomeScreen(navController: NavController) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "CINEMA ÁGUILAS UAS",
-                        color = Yellow,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "UNIVERSIDAD AUTÓNOMA DE SINALOA",
-                        color = Yellow.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
@@ -115,28 +137,47 @@ fun WelcomeScreen(navController: NavController) {
                 // Botones de acción
                 Button(
                     onClick = { navController.navigate("login") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .height(50.dp)
                 ) {
-                    Text("Comenzar ahora", color = DarkBlue, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Comenzar ahora",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Button(
-
-
-
+                OutlinedButton(
                     onClick = { navController.navigate("home") },
-
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow),
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
-                        .height(50.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    )
                 ) {
-                    Text("Ver catálogo", color = DarkBlue, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Ver catálogo",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }

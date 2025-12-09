@@ -23,8 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tallerintegrador.feature.admin.AdminViewModel
 import com.example.tallerintegrador.feature.admin.Usuario
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,12 +70,12 @@ fun AdminUsuariosScreen(
                     Column {
                         Text(
                             "Gestionar Usuarios",
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             "${usuarios.size} usuarios registrados",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -87,7 +85,7 @@ fun AdminUsuariosScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -96,17 +94,17 @@ fun AdminUsuariosScreen(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Actualizar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -115,7 +113,7 @@ fun AdminUsuariosScreen(
         ) {
             if (isLoading && usuarios.isEmpty()) {
                 CircularProgressIndicator(
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else if (usuarios.isEmpty()) {
@@ -150,13 +148,13 @@ fun AdminUsuariosScreen(
                                 Icon(
                                     Icons.Filled.SearchOff,
                                     contentDescription = null,
-                                    tint = Color.White.copy(alpha = 0.3f),
+                                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                                     modifier = Modifier.size(64.dp)
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
                                     "No se encontraron usuarios",
-                                    color = Color.White.copy(alpha = 0.6f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                     fontSize = 16.sp
                                 )
                             }
@@ -200,12 +198,12 @@ fun AdminUsuariosScreen(
                     modifier = Modifier
                         .size(64.dp)
                         .clip(CircleShape)
-                        .background(Yellow),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = selectedUsuario?.name?.take(1)?.uppercase() ?: "",
-                        color = DarkBlue,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -214,7 +212,7 @@ fun AdminUsuariosScreen(
             title = {
                 Text(
                     "Detalles del Usuario",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -229,10 +227,10 @@ fun AdminUsuariosScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showDetailsDialog = false }) {
-                    Text("Cerrar", color = Yellow)
+                    Text("Cerrar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -245,14 +243,14 @@ fun AdminUsuariosScreen(
                 Icon(
                     Icons.Filled.Warning,
                     contentDescription = "Advertencia",
-                    tint = Color.Red,
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(48.dp)
                 )
             },
             title = {
                 Text(
                     "Eliminar Usuario",
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -260,13 +258,13 @@ fun AdminUsuariosScreen(
                 Column {
                     Text(
                         "¿Estás seguro de eliminar a ${selectedUsuario?.name}?",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         "Esta acción eliminará:",
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -278,7 +276,7 @@ fun AdminUsuariosScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         "⚠️ Esta acción no se puede deshacer",
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -296,17 +294,19 @@ fun AdminUsuariosScreen(
                         showDeleteDialog = false
                         selectedUsuario = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
                 ) {
                     Text("Eliminar", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar", color = Yellow)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.primary)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -321,7 +321,7 @@ fun AdminUsuariosScreen(
             title = {
                 Text(
                     "Editar Usuario",
-                    color = Yellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -330,36 +330,36 @@ fun AdminUsuariosScreen(
                     OutlinedTextField(
                         value = nuevoNombre,
                         onValueChange = { nuevoNombre = it },
-                        label = { Text("Nombre", color = Yellow) },
+                        label = { Text("Nombre", color = MaterialTheme.colorScheme.primary) },
                         leadingIcon = {
-                            Icon(Icons.Filled.Person, null, tint = Yellow)
+                            Icon(Icons.Filled.Person, null, tint = MaterialTheme.colorScheme.primary)
                         },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = Yellow,
-                            focusedBorderColor = Yellow,
-                            unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     )
 
                     OutlinedTextField(
                         value = nuevoEmail,
                         onValueChange = { nuevoEmail = it },
-                        label = { Text("Email", color = Yellow) },
+                        label = { Text("Email", color = MaterialTheme.colorScheme.primary) },
                         leadingIcon = {
-                            Icon(Icons.Filled.Email, null, tint = Yellow)
+                            Icon(Icons.Filled.Email, null, tint = MaterialTheme.colorScheme.primary)
                         },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = Yellow,
-                            focusedBorderColor = Yellow,
-                            unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     )
                 }
@@ -381,17 +381,23 @@ fun AdminUsuariosScreen(
                         selectedUsuario = null
                     },
                     enabled = nuevoNombre.isNotBlank() && nuevoEmail.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
-                    Text("Guardar", color = DarkBlue, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Guardar",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEditDialog = false }) {
-                    Text("Cancelar", color = Color.White)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
                 }
             },
-            containerColor = DarkBlue,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -407,23 +413,36 @@ fun SearchBar(
         value = query,
         onValueChange = onQueryChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder = { Text("Buscar usuarios...", color = Color.White.copy(alpha = 0.5f)) },
+        placeholder = {
+            Text(
+                "Buscar usuarios...",
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            )
+        },
         leadingIcon = {
-            Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = Yellow)
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = "Buscar",
+                tint = MaterialTheme.colorScheme.primary
+            )
         },
         trailingIcon = {
             if (query.isNotEmpty()) {
                 IconButton(onClick = { onQueryChange("") }) {
-                    Icon(Icons.Filled.Close, contentDescription = "Limpiar", tint = Yellow)
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Limpiar",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            cursorColor = Yellow,
-            focusedBorderColor = Yellow,
-            unfocusedBorderColor = Yellow.copy(alpha = 0.5f)
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
         ),
         shape = RoundedCornerShape(12.dp),
         singleLine = true
@@ -440,7 +459,7 @@ fun StatsRow(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Yellow.copy(alpha = 0.15f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Row(
@@ -450,9 +469,15 @@ fun StatsRow(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             StatItem("Total", totalUsuarios.toString(), Icons.Filled.People)
-            VerticalDivider(modifier = Modifier.height(40.dp))
+            VerticalDivider(
+                modifier = Modifier.height(40.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+            )
             StatItem("Activos", usuariosActivos.toString(), Icons.Filled.PersonOutline)
-            VerticalDivider(modifier = Modifier.height(40.dp))
+            VerticalDivider(
+                modifier = Modifier.height(40.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+            )
             StatItem("Inactivos", (totalUsuarios - usuariosActivos).toString(), Icons.Filled.PersonOff)
         }
     }
@@ -461,10 +486,24 @@ fun StatsRow(
 @Composable
 fun StatItem(label: String, value: String, icon: ImageVector) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, contentDescription = label, tint = Yellow, modifier = Modifier.size(20.dp))
+        Icon(
+            icon,
+            contentDescription = label,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(value, color = Yellow, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(label, color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+        Text(
+            value,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            label,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            fontSize = 12.sp
+        )
     }
 }
 
@@ -479,7 +518,7 @@ fun UsuarioCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -492,12 +531,12 @@ fun UsuarioCard(
                     modifier = Modifier
                         .size(56.dp)
                         .clip(CircleShape)
-                        .background(Yellow),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = usuario.name.take(1).uppercase(),
-                        color = DarkBlue,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -509,14 +548,14 @@ fun UsuarioCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = usuario.name,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = usuario.email,
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -530,7 +569,7 @@ fun UsuarioCard(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "${usuario.favoritosCount} favoritos",
-                            color = Color.White.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -548,7 +587,7 @@ fun UsuarioCard(
                     onClick = onDetails,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Yellow
+                        contentColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Icon(Icons.Filled.Info, null, modifier = Modifier.size(18.dp))
@@ -572,7 +611,7 @@ fun UsuarioCard(
                     onClick = onDelete,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.Red
+                        contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
                     Icon(Icons.Filled.Delete, null, modifier = Modifier.size(18.dp))
@@ -587,16 +626,33 @@ fun UsuarioCard(
 @Composable
 fun DetailRow(label: String, value: String) {
     Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(label, color = Yellow, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        Text(value, color = Color.White, fontSize = 14.sp)
+        Text(
+            label,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            value,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 14.sp
+        )
     }
 }
 
 @Composable
 fun BulletPoint(text: String) {
     Row(verticalAlignment = Alignment.Top) {
-        Text("• ", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-        Text(text, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+        Text(
+            "• ",
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            fontSize = 14.sp
+        )
+        Text(
+            text,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            fontSize = 14.sp
+        )
     }
 }
 
@@ -609,13 +665,13 @@ fun EmptyUsersState(modifier: Modifier = Modifier) {
         Icon(
             Icons.Filled.PeopleOutline,
             contentDescription = null,
-            tint = Color.White.copy(alpha = 0.3f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             "No hay usuarios registrados",
-            color = Color.White.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontSize = 16.sp
         )
     }

@@ -19,8 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.tallerintegrador.feature.admin.AdminViewModel
-import com.example.tallerintegrador.ui.theme.DarkBlue
-import com.example.tallerintegrador.ui.theme.Yellow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,14 +137,14 @@ fun AdminPeliculaFormScreen(
                     Column {
                         Text(
                             titulo,
-                            color = Yellow,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
                         if (peliculaId != null) {
                             Text(
                                 "ID: $peliculaId",
-                                color = Color.White.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp
                             )
                         }
@@ -157,17 +155,17 @@ fun AdminPeliculaFormScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBlue
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBlue
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Box(
             modifier = Modifier
@@ -183,11 +181,11 @@ fun AdminPeliculaFormScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator(color = Yellow)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         "Cargando datos de la película...",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp
                     )
                 }
@@ -203,7 +201,7 @@ fun AdminPeliculaFormScreen(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (esEdicion)
-                                    Yellow.copy(alpha = 0.15f)
+                                    MaterialTheme.colorScheme.primaryContainer
                                 else
                                     Color(0xFF2196F3).copy(alpha = 0.15f)
                             ),
@@ -218,14 +216,19 @@ fun AdminPeliculaFormScreen(
                                 Icon(
                                     imageVector = if (esEdicion) Icons.Filled.Edit else Icons.Filled.Add,
                                     contentDescription = null,
-                                    tint = if (esEdicion) Yellow else Color(0xFF2196F3),
+                                    tint = if (esEdicion)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        Color(0xFF2196F3),
                                     modifier = Modifier.size(28.dp)
                                 )
+
                                 Spacer(modifier = Modifier.width(12.dp))
+
                                 Column {
                                     Text(
                                         if (esEdicion) "Modo Edición" else "Modo Creación",
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -234,7 +237,7 @@ fun AdminPeliculaFormScreen(
                                             "Modifica los campos que necesites"
                                         else
                                             "Completa todos los campos obligatorios (*)",
-                                        color = Color.White.copy(alpha = 0.7f),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 13.sp
                                     )
                                 }
@@ -247,24 +250,24 @@ fun AdminPeliculaFormScreen(
                         OutlinedTextField(
                             value = title,
                             onValueChange = { title = it },
-                            label = { Text("Título *", color = Yellow) },
+                            label = { Text("Título *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Movie, null, tint = Yellow)
+                                Icon(Icons.Filled.Movie, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             isError = titleError != null,
                             supportingText = {
                                 titleError?.let {
-                                    Text(it, color = Color.Red)
+                                    Text(it, color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -275,26 +278,26 @@ fun AdminPeliculaFormScreen(
                         OutlinedTextField(
                             value = description,
                             onValueChange = { description = it },
-                            label = { Text("Descripción *", color = Yellow) },
+                            label = { Text("Descripción *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Description, null, tint = Yellow)
+                                Icon(Icons.Filled.Description, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             isError = descriptionError != null,
                             supportingText = {
                                 descriptionError?.let {
-                                    Text(it, color = Color.Red)
+                                    Text(it, color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 4,
                             maxLines = 6,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -305,27 +308,33 @@ fun AdminPeliculaFormScreen(
                         OutlinedTextField(
                             value = genre,
                             onValueChange = { genre = it },
-                            label = { Text("Género *", color = Yellow) },
+                            label = { Text("Género *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Category, null, tint = Yellow)
+                                Icon(Icons.Filled.Category, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             placeholder = {
-                                Text("Ej: Acción, Drama, Comedia", color = Color.White.copy(alpha = 0.5f))
+                                Text(
+                                    "Ej: Acción, Drama, Comedia",
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                )
                             },
                             isError = genreError != null,
                             supportingText = {
                                 genreError?.let {
-                                    Text(it, color = Color.Red)
-                                } ?: Text("Separa múltiples géneros con comas", color = Color.White.copy(alpha = 0.6f))
+                                    Text(it, color = MaterialTheme.colorScheme.error)
+                                } ?: Text(
+                                    "Separa múltiples géneros con comas",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -340,24 +349,24 @@ fun AdminPeliculaFormScreen(
                                     durationMinutes = it
                                 }
                             },
-                            label = { Text("Duración (minutos) *", color = Yellow) },
+                            label = { Text("Duración (minutos) *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Schedule, null, tint = Yellow)
+                                Icon(Icons.Filled.Schedule, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             isError = durationError != null,
                             supportingText = {
                                 durationError?.let {
-                                    Text(it, color = Color.Red)
+                                    Text(it, color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -368,27 +377,30 @@ fun AdminPeliculaFormScreen(
                         OutlinedTextField(
                             value = posterUrl,
                             onValueChange = { posterUrl = it },
-                            label = { Text("URL del Póster *", color = Yellow) },
+                            label = { Text("URL del Póster *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.Image, null, tint = Yellow)
+                                Icon(Icons.Filled.Image, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             placeholder = {
-                                Text("https://...", color = Color.White.copy(alpha = 0.5f))
+                                Text(
+                                    "https://...",
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                )
                             },
                             isError = posterUrlError != null,
                             supportingText = {
                                 posterUrlError?.let {
-                                    Text(it, color = Color.Red)
+                                    Text(it, color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -401,7 +413,7 @@ fun AdminPeliculaFormScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color.White.copy(alpha = 0.05f)
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 )
                             ) {
                                 Column(
@@ -414,13 +426,13 @@ fun AdminPeliculaFormScreen(
                                         Icon(
                                             Icons.Filled.Visibility,
                                             contentDescription = null,
-                                            tint = Yellow,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             "Preview del Póster",
-                                            color = Yellow,
+                                            color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -445,27 +457,30 @@ fun AdminPeliculaFormScreen(
                         OutlinedTextField(
                             value = videoUrl,
                             onValueChange = { videoUrl = it },
-                            label = { Text("URL del Video/Tráiler *", color = Yellow) },
+                            label = { Text("URL del Video/Tráiler *", color = MaterialTheme.colorScheme.primary) },
                             leadingIcon = {
-                                Icon(Icons.Filled.VideoLibrary, null, tint = Yellow)
+                                Icon(Icons.Filled.VideoLibrary, null, tint = MaterialTheme.colorScheme.primary)
                             },
                             placeholder = {
-                                Text("https://...", color = Color.White.copy(alpha = 0.5f))
+                                Text(
+                                    "https://...",
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                )
                             },
                             isError = videoUrlError != null,
                             supportingText = {
                                 videoUrlError?.let {
-                                    Text(it, color = Color.Red)
+                                    Text(it, color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Yellow,
-                                focusedBorderColor = Yellow,
-                                unfocusedBorderColor = Yellow.copy(alpha = 0.5f),
-                                errorBorderColor = Color.Red
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -481,7 +496,7 @@ fun AdminPeliculaFormScreen(
                                 onClick = { navController.popBackStack() },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = Color.White
+                                    contentColor = MaterialTheme.colorScheme.onSurface
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
@@ -530,14 +545,14 @@ fun AdminPeliculaFormScreen(
                                 enabled = isFormValid && !isLoading,
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Yellow,
+                                    containerColor = MaterialTheme.colorScheme.primary,
                                     disabledContainerColor = Color.Gray
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 if (isLoading) {
                                     CircularProgressIndicator(
-                                        color = DarkBlue,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         modifier = Modifier.size(20.dp),
                                         strokeWidth = 2.dp
                                     )
@@ -545,12 +560,12 @@ fun AdminPeliculaFormScreen(
                                     Icon(
                                         Icons.Filled.Save,
                                         null,
-                                        tint = DarkBlue
+                                        tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         if (esEdicion) "Actualizar" else "Crear",
-                                        color = DarkBlue,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }

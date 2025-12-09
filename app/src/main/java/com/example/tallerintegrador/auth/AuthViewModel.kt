@@ -76,7 +76,7 @@ class AuthViewModel @Inject constructor(
                 Log.d("AuthViewModel", "Registro exitoso - Token guardado")
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Registration failed", e)
-                authState.value = AuthState.Error("Error en el registro: ${e.message}")
+                authState.value = AuthState.Error("El registro fue exitoso, pero no se pudo iniciar sesión automáticamente. Por favor, inicia sesión.")
             }
         }
     }
